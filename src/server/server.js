@@ -19,6 +19,7 @@ let map = new mapUtils.Map(config);
 
 let sockets = {};
 let spectators = [];
+let spectatorPlayers = {};
 const INIT_MASS_LOG = util.mathLog(config.defaultPlayerMass, config.slowBase);
 
 let leaderboard = [];
@@ -78,8 +79,9 @@ const addPlayer = (socket) => {
     });
 
     socket.on('windowResized', (data) => {
-        currentPlayer.screenWidth = data.screenWidth;
-        currentPlayer.screenHeight = data.screenHeight;
+	//console.log("windowResized player",currentPlayer,data);
+	currentPlayer.screenWidth = data.screenWidth;
+	currentPlayer.screenHeight = data.screenHeight;
     });
 
     socket.on('respawn', () => {
@@ -195,12 +197,46 @@ const addPlayer = (socket) => {
 }
 
 const addSpectator = (socket) => {
-    socket.on('gotit', function () {
-        sockets[socket.id] = socket;
-        spectators.push(socket.id);
-        io.emit('playerJoin', { name: '' });
+    spectatorPlayers[socket.id] = {}
+    socket.on('gotit', function (player) {
+        console.log("gotit: spectator", player)	      
+	if (socket.id in sockets) {
+	  console.log("spectator reconnecting", player)
+        } else {
+	  console.log("new spectator", player)
+          sockets[socket.id] = socket
+          spectators.push(socket.id)
+	}
+	let sx = config.gameWidth / 2
+	let sy = config.gameHeight / 2
+        let newPlayer = {
+	  x: sx,
+	  y: sy,
+	  cells: [],
+	  massTotal: 0,
+	  hue: 100,
+	  id: socket.id,
+	  name: player.name,
+	  type: "spectator",
+	}
+        spectatorPlayers[socket.id] = newPlayer
+	if (player!==null && player!==undefined) {
+	  newPlayer.name = player.name
+	  newPlayer.x = player.x
+	  newPlayer.y = player.y
+	  newPlayer.screenWidth = player.screenWidth
+	  newPlayer.screenHeight = player.screenHeight
+	}
+        io.emit('playerJoin', { name: player.name })
+    })
+    socket.on('windowResized', (data) => {
+	let currentPlayer = spectatorPlayers[socket.id];
+	console.log("windowResized spectator",currentPlayer,data);
+	if (data!==undefined) {
+	  currentPlayer.screenWidth = data.screenWidth;
+	  currentPlayer.screenHeight = data.screenHeight;
+        }
     });
-
     socket.emit("welcome", {}, {
         width: config.gameWidth,
         height: config.gameHeight
@@ -306,16 +342,25 @@ const gameloop = () => {
 };
 
 const sendUpdates = () => {
-    spectators.forEach(updateSpectator);
+    console.log("sendUpdates","spectators",spectators.length,"players",map.players.data.length)
+    spectators.forEach(function (socketID) {
+      let player = spectatorPlayers[socketID]
+      map.doPlayerVisibility(player, function (playerData, visiblePlayers, visibleFood, visibleMass, visibleViruses) {
+        sockets[socketID].emit('serverTellPlayerMove', playerData, visiblePlayers, visibleFood, visibleMass, visibleViruses);
+	if (leaderboardChanged) {
+	    sendLeaderboard(sockets[socketID])
+	}
+      })
+    })
     map.enumerateWhatPlayersSee(function (playerData, visiblePlayers, visibleFood, visibleMass, visibleViruses) {
+        //console.log("sendUpdates player",playerData.id,playerData.name,"sees",visiblePlayers)
         sockets[playerData.id].emit('serverTellPlayerMove', playerData, visiblePlayers, visibleFood, visibleMass, visibleViruses);
         if (leaderboardChanged) {
-            sendLeaderboard(sockets[playerData.id]);
+            sendLeaderboard(sockets[playerData.id])
         }
-    });
-
-    leaderboardChanged = false;
-};
+    })
+    leaderboardChanged = false
+}
 
 const sendLeaderboard = (socket) => {
     socket.emit('leaderboard', {
@@ -323,7 +368,9 @@ const sendLeaderboard = (socket) => {
         leaderboard
     });
 }
+
 const updateSpectator = (socketID) => {
+    /*
     let playerData = {
         x: config.gameWidth / 2,
         y: config.gameHeight / 2,
@@ -333,6 +380,8 @@ const updateSpectator = (socketID) => {
         id: socketID,
         name: ''
     };
+    */
+    let playerData = spectatorPlayers[socket.id]
     sockets[socketID].emit('serverTellPlayerMove', playerData, map.players.data, map.food.data, map.massFood.data, map.viruses.data);
     if (leaderboardChanged) {
         sendLeaderboard(sockets[socketID]);

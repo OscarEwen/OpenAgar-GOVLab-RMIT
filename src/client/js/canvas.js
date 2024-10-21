@@ -29,11 +29,14 @@ class Canvas {
     // Function called when a key is pressed, will change direction if arrow key.
     directionDown(event) {
     	var key = event.which || event.keyCode;
+	console.log("directionDown",key)
         var self = this.parent; // have to do this so we are not using the cv object
     	if (self.directional(key)) {
     		self.directionLock = true;
     		if (self.newDirection(key, self.directions, true)) {
+			console.log("directionDown",self.directions)
     			self.updateTarget(self.directions);
+			console.log("directionDown",self.directions)
     			self.socket.emit('0', self.target);
     		}
     	}

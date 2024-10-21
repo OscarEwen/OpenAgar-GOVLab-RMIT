@@ -238,6 +238,8 @@ function setupSocket(socket) {
 
     // Handle movement.
     socket.on('serverTellPlayerMove', function (playerData, userData, foodsList, massList, virusList) {
+	console.log('serverTellPlayerMove',playerData)
+	// TODO: change point?
         if (global.playerType == 'player') {
             player.x = playerData.x;
             player.y = playerData.y;
@@ -368,7 +370,9 @@ function resize() {
     if (!socket) return;
 
     player.screenWidth = c.width = global.screen.width = global.playerType == 'player' ? window.innerWidth : global.game.width;
+    //player.screenWidth = c.width = global.screen.width = window.innerWidth
     player.screenHeight = c.height = global.screen.height = global.playerType == 'player' ? window.innerHeight : global.game.height;
+    //player.screenHeight = c.height = global.screen.height =  window.innerHeight
 
     if (global.playerType == 'spectator') {
         player.x = global.game.width / 2;
