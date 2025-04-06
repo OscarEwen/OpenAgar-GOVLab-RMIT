@@ -2,8 +2,10 @@ OpenAgar @ GOVLab RMIT
 =============
 Forked from Ian Peakes GOVLab fork of the Agario clone project, 
 
-[![GitHub Issues](https://github.com/OscarEwen/OpenAgar-GOVLab-RMIT/issues)
-[![GitHub Wiki](https://github.com/OscarEwen/OpenAgar-GOVLab-RMIT/wiki)
+[![GitHub Issues](https://github.com/OscarEwen/OpenAgar-GOVLab-RMIT/issues)]
+
+[![GitHub Wiki](https://github.com/OscarEwen/OpenAgar-GOVLab-RMIT/wiki)]
+
 Live demo not operating as of yet.
 
 A fork of an open source "Agar.IO" clone known as OpenAgar designed to work with the GOVLab display system hosted at RMIT, a 14400x3240 tiled display wall. Built with socket.IO and HTML5 canvas on top of NodeJS.
