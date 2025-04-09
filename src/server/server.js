@@ -396,3 +396,25 @@ setInterval(sendUpdates, 1000 / config.networkUpdateFactor);
 var ipaddress = process.env.OPENSHIFT_NODEJS_IP || process.env.IP || config.host;
 var serverport = process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || config.port;
 http.listen(serverport, ipaddress, () => console.log('[DEBUG] Listening on ' + ipaddress + ':' + serverport));
+
+
+const { spawn } = require('child_process');
+
+// Function to spawn bots
+function spawnBots(count) {
+    for (let i = 0; i < count; i++) {
+        const botProcess = spawn('python', ['src/server/bot.py']);
+        botProcess.stdout.on('data', (data) => {
+            console.log(`[BOT ${i}] ${data}`);
+        });
+        botProcess.stderr.on('data', (data) => {
+            console.error(`[BOT ${i} ERROR] ${data}`);
+        });
+        botProcess.on('close', (code) => {
+            console.log(`[BOT ${i}] Process exited with code ${code}`);
+        });
+    }
+}
+
+// Spawn bots when the server starts
+spawnBots(1); // Adjust the number of bots as needed
