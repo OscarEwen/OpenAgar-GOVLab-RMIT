@@ -400,22 +400,21 @@ http.listen(serverport, ipaddress, () => console.log('[DEBUG] Listening on ' + i
 
 const { spawn } = require('child_process');
 
-// Function to spawn bots
-function spawnBots(count) {
-    for (let i = 0; i < count; i++) {
-        const botProcess = spawn('python', ['src/server/bot.py']);
-        botProcess.stdout.on('data', (data) => {
+// Func to spawn multiple of my randy bots
+function spawnRandyBots(amount) {
+    for (let i = 0; i < amount; i++) {
+        const pyBotScript = spawn('python', ['src/server/bot.py']);
+        pyBotScript.stdout.on('data', (data) => {//error chks
             console.log(`[RANDYBOT ${i}] ${data}`);
         });
-        botProcess.stderr.on('data', (data) => {
+        pyBotScript.stderr.on('data', (data) => {
             console.error(`[RANDYBOT ${i} ERROR] ${data}`);
         });
-        botProcess.on('close', (code) => {
+        pyBotScript.on('close', (code) => {
             console.log(`[RANDYBOT ${i}] Process exited with code ${code}`);
         });
     }
 }
-
-// Spawn bots when the server starts
-spawnBots(1); // Adjust the number of bots as needed
+//spawning randys
+spawnRandyBots(1);
 
