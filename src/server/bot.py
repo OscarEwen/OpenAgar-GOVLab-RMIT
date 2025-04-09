@@ -16,7 +16,7 @@ class Bot:
         self.target = {"x": SCREEN_WIDTH / 2, "y": SCREEN_HEIGHT / 2}
 
     def connect(self):
-        print(f"[BOT] Connecting as {self.name}...")
+        print(f"[RANDYBOT] Connecting as {self.name}...")
         # Add query parameters directly to the URL
         url_with_query = f"{SERVER_URL}?type=player"
         sio.connect(url_with_query)
@@ -46,21 +46,23 @@ class Bot:
             # Random split or fire food
             if random.random() < 0.1:
                 sio.emit("2")  # Split
+                print("[BOT] Split action triggered.")
             if random.random() < 0.05:
                 sio.emit("1")  # Fire food
+                print("[BOT] Fire food action triggered.")
 
-            time.sleep(5)  # Adjust interval for smoother movement
+            time.sleep(0.1)  # Adjust interval for smoother movement
 # Event Handlers
 @sio.event
 def connect():
-    print("[BOT] Connected to the server.")
+    print("[RANDYBOT] Connected to the server.")
 
 @sio.event
 def disconnect():
-    print("[BOT] Disconnected from the server.")
+    print("[RANDYBOT] Disconnected from the server.")
 
 # Start the bot
 if __name__ == "__main__":
-    bot = Bot(name=f"Bot_{random.randint(1000, 9999)}")
+    bot = Bot(name=f"RandyBot{random.randint(1000, 9999)}")
     bot.connect()
     bot.random_actions()

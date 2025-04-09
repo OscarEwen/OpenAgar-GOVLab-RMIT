@@ -209,7 +209,7 @@ const addSpectator = (socket) => {
 	}
 	let sx = config.gameWidth / 2
 	let sy = config.gameHeight / 2
-        let newPlayer = {
+    let newPlayer = {
 	  x: sx,
 	  y: sy,
 	  cells: [],
@@ -405,16 +405,17 @@ function spawnBots(count) {
     for (let i = 0; i < count; i++) {
         const botProcess = spawn('python', ['src/server/bot.py']);
         botProcess.stdout.on('data', (data) => {
-            console.log(`[BOT ${i}] ${data}`);
+            console.log(`[RANDYBOT ${i}] ${data}`);
         });
         botProcess.stderr.on('data', (data) => {
-            console.error(`[BOT ${i} ERROR] ${data}`);
+            console.error(`[RANDYBOT ${i} ERROR] ${data}`);
         });
         botProcess.on('close', (code) => {
-            console.log(`[BOT ${i}] Process exited with code ${code}`);
+            console.log(`[RANDYBOT ${i}] Process exited with code ${code}`);
         });
     }
 }
 
 // Spawn bots when the server starts
 spawnBots(1); // Adjust the number of bots as needed
+
