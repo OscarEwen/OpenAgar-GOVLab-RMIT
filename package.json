@@ -1,7 +1,7 @@
 {
-  "name": "agar.io-clone",
+  "name": "OpenAgar-GOVLab",
   "version": "1.0.0",
-  "description": "A simple Agar.io clone",
+  "description": "OpenAgar clone written with Socket.IO and HTML5 canvas modified for use with the GOVLab at RMIT, utilising the GOVLabs 14400x3240 display to show the entire playing field in real-time",
   "main": "server/server.js",
   "scripts": {
     "build": "gulp build",
@@ -11,32 +11,21 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/owenashurst/agar.io-clone.git"
+    "url": "https://github.com/OscarEwen/OpenAgar-GOVLab-RMIT"
   },
-  "author": "Huy Tran",
+  "author": "RMIT OpenAgar 25S1 Team",
   "maintainers": [
     {
-      "name": "Owen Ashurst"
+      "name": "Ian Peake"
+      
     }
   ],
   "license": "MIT",
   "contributors": [
-    "abalabahaha <hi@abal.moe> (https://github.com/abalabahaha)",
-    "Ariamiro <dossantosgusmaosavio@gmail.com> (https://github.com/Ariamiro)",
-    "Bjarne Oeverli <bjarne.oeverli@gmail.com> (https://github.com/bjarneo)",
-    "Chris Morgan <chris.j.r.morgan@gmail.com> (https://github.com/drpotato)",
-    "Damian Dlugosz <bigfootdd@gmail.com> (https://github.com/bigfoot90)",
-    "Dan Prince <dan@astrealdynamics.co.uk> (https://github.com/danprince)",
-    "Igor Antun <igorantunc@hotmail.com> (https://github.com/IgorAntun)",
-    "Juha Tauriainen <juha@bin.fi> (https://github.com/JuhQ)",
-    "Keith Groves <Keithalgroves@gmail.com> (https://github.com/buskcoin)",
-    "Kostas Bariotis <konmpar@gmail.com> (https://github.com/kbariotis)",
-    "Madara Uchiha <me@madara.ninja> (https://github.com/MadaraUchiha)",
-    "Nguyen Huu Thanh <giongto35@yahoo.com> (https://github.com/giongto35)",
-    "PET Computação UFPR <pet@inf.ufpr.br> (http://pet.inf.ufpr.br)",
-    "Saren Currie <saren@sarencurrie.com> (https://github.com/SarenCurrie)",
-    "VILLERS Mickaël <mickael.villers@epitech.eu> (https://github.com/villers)",
-    "wb9688 <wbertrums@gmail.com> (https://github.com/wb9688)"
+    "Oscar Ewen <s3897420@student.rmit.edu.au> (https://github.com/OscarEwen)",
+    "Kristijan Popordanoski <S3935358@student.rmit.edu.au> (https://github.com/KrisP-Kreme)",
+    "James Hill <S3942290@student.rmit.edu.au> (https://github.com/SpeedyDuck790)",
+    "Mark Mezentseff <S3898294@student.rmit.edu.au> (https://github.com/MarkMez1)"
   ],
   "dependencies": {
     "@babel/core": "^7.21.8",
