@@ -98,7 +98,7 @@ div {
     color: #2ecc71;
 }
 
-.chatbox .chat-list li.system {
+chatbox .chat-list li.system {
     color: #9b59b6;
     font-style: italic;
 }
@@ -282,4 +282,13 @@ input [type="image"]:focus{
 *:focus {
  outline: 1px solid transparent;
  border-style: none;
+}
+
+#skinSelector {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
 }
