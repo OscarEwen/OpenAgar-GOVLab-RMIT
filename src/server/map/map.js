@@ -37,7 +37,7 @@ exports.Map = class {
     }
 
     doPlayerVisibility(currentPlayer,callback) {
-        console.log("doPlayerVisibility",currentPlayer.id,currentPlayer.name,currentPlayer)
+        // console.log("doPlayerVisibility",currentPlayer.id,currentPlayer.name,currentPlayer)
 	var visibleFood = this.food.data.filter(entity => isVisibleEntity(entity, currentPlayer, false));
 	var visibleViruses = this.viruses.data.filter(entity => isVisibleEntity(entity, currentPlayer));
 	var visibleMass = this.massFood.data.filter(entity => isVisibleEntity(entity, currentPlayer));
@@ -57,7 +57,7 @@ exports.Map = class {
 	for (let player of this.players.data) {
 	    for (let cell of player.cells) {
 		if (isVisibleEntity(cell, currentPlayer)) {
-		    if (currentPlayer.id!==player.id) { console.log("player",currentPlayer.id,currentPlayer.name,"sees",player.id,player.name) }
+		    // if (currentPlayer.id!==player.id) { console.log("player",currentPlayer.id,currentPlayer.name,"sees",player.id,player.name) }
 		    visiblePlayers.push(extractData(player));
 		    break;
 		}

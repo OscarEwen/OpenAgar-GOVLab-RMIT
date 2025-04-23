@@ -342,7 +342,7 @@ const gameloop = () => {
 };
 
 const sendUpdates = () => {
-    console.log("sendUpdates","spectators",spectators.length,"players",map.players.data.length)
+    // console.log("sendUpdates","spectators",spectators.length,"players",map.players.data.length)
     spectators.forEach(function (socketID) {
       let player = spectatorPlayers[socketID]
       map.doPlayerVisibility(player, function (playerData, visiblePlayers, visibleFood, visibleMass, visibleViruses) {
@@ -396,3 +396,40 @@ setInterval(sendUpdates, 1000 / config.networkUpdateFactor);
 var ipaddress = process.env.OPENSHIFT_NODEJS_IP || process.env.IP || config.host;
 var serverport = process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || config.port;
 http.listen(serverport, ipaddress, () => console.log('[DEBUG] Listening on ' + ipaddress + ':' + serverport));
+
+const { spawn } = require('child_process');
+
+  
+
+// function to spawn bots
+
+function spawnRandyBots(amount) {
+
+    for (let i = 0; i < amount; i++) {
+
+        const pyBotScript = spawn('python', ['src/bot/bot.py']);
+
+        pyBotScript.stdout.on('data', (data) => {//error chks
+
+            console.log(`[RANDYBOT ${i}] ${data}`);
+
+        });
+
+        pyBotScript.stderr.on('data', (data) => {
+
+            console.error(`[RANDYBOT ${i} ERROR] ${data}`);
+
+        });
+
+        pyBotScript.on('close', (code) => {
+
+            console.log(`[RANDYBOT ${i}] Process exited with code ${code}`);
+
+        });
+
+    }
+
+}
+
+// spawn however many bots you want
+spawnRandyBots(10);
