@@ -51,10 +51,15 @@ class Bot:
         self.screen_height = SCREEN_HEIGHT
         
         # bot behavior parameters
-        self.attack_range = 300
-        self.flee_range = 400
-        self.stop_fleeing_range = 600
-        self.massAdvantageRatio = 1.2  # attack when 20% bigger
+        self.attack_range = 600
+        self.flee_range = 700
+        self.stop_fleeing_range = 900
+        self.massAdvantageRatio = 1.25  # attack when 20% bigger
+
+        # splitting paramaters
+        self.lastSplitTime = 0
+        self.splitCooldown = 5.0  # seconds
+        self.canSplit = True
         
         # Setup socket events
         self.setup_socket_events()
@@ -160,12 +165,26 @@ class Bot:
             if player:
                 desiredTarget = {"x": player.get("x", 0), "y": player.get("y", 0)}
                 
-                # TO FIX
-                # occasionally split when close to target
+                # splitting to attack behaviour
                 distToTarget = self.distance(self.position, desiredTarget)
-                if self.mass > 100 and distToTarget < 50 and random.random() < 0.2:
+                currentTime = time.time()
+
+                # check if enough time has passed since last split
+                if currentTime - self.lastSplitTime > self.splitCooldown:
+                    self.canSplit = True
+
+                # only split if: target is close, we're 2.5x bigger, we're big enough and cooldown has passed
+                # <!> Can add random chance to split as opposed to always splitting when in range for easier gameplay <!>
+                # <!> Can tweak range for spltting to attack <!>
+                if (self.canSplit and self.mass >= player.get("massTotal", 0) * 2.5 and 
+                    self.mass > 35 and distToTarget < 150):
+
                     self.split()
-                    print(f"[{self.name}] Attack state: splitting to attack")
+                    
+                    # update split variables
+                    self.lastSplitTime = currentTime
+                    self.canSplit = False  # prevent splitting again until cooldown passes
+                    
             else:
                 # if no smaller player is found, handle SmallerEnemyOutOfRange event
                 self.handleEvent(BotEvent.SmallerEnemyOutOfRange)
@@ -323,13 +342,13 @@ class Bot:
             self.sio.emit('0', relative_target)  # '0' is the heartbeat event
     
     
-    # split into smaller cells function
+    # split into smaller cell(s) function
     def split(self):
         if self.state != BotState.Dead and self.state != BotState.Respawn:
             self.sio.emit('2')  # '2' is the split event
     
     # eject small amounts of mass function
-    def eject_mass(self):
+    def ejectMass(self):
         if self.state != BotState.Dead and self.state != BotState.Respawn:
             self.sio.emit('1')  # '1' is the eject mass event
     
