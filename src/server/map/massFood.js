@@ -1,7 +1,7 @@
 "use strict";
 
 const util = require('../lib/util');
-const gameLogic = require('../game-logic');
+const gameLogic = require('../game-logic').default;
 const sat = require('sat')
 
 exports.MassFood = class {

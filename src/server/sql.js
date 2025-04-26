@@ -1,15 +1,15 @@
 const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
-const fs = require('fs');
-const config = require('../../config');
+import { join, dirname } from 'path';
+import { existsSync, mkdirSync } from 'fs';
+import { sqlinfo } from '../../config';
 
-const sqlInfo = config.sqlinfo;
-const dbPath = path.join(__dirname, 'db', sqlInfo.fileName);
+const sqlInfo = sqlinfo;
+const dbPath = join(__dirname, 'db', sqlInfo.fileName);
 
 // Ensure the database folder exists
-const dbFolder = path.dirname(dbPath);
-if (!fs.existsSync(dbFolder)) {
-  fs.mkdirSync(dbFolder, { recursive: true });
+const dbFolder = dirname(dbPath);
+if (!existsSync(dbFolder)) {
+  mkdirSync(dbFolder, { recursive: true });
   console.log(`Created the database folder: ${dbFolder}`);
 }
 
@@ -61,4 +61,4 @@ process.on('beforeExit', () => {
   });
 });
 
-module.exports = db;
+export default db;

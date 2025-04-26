@@ -1,4 +1,4 @@
-const db = require("../sql.js");
+const db = require("../sql.js").default;
 
 const logFailedLoginAttempt = async (username, ipAddress) => {
     return new Promise((resolve) => {

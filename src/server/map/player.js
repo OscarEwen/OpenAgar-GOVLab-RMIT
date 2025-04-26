@@ -2,7 +2,7 @@
 
 const util = require('../lib/util');
 const sat = require('sat');
-const gameLogic = require('../game-logic');
+const gameLogic = require('../game-logic').default;
 
 const MIN_SPEED = 6.25;
 const SPLIT_CELL_SPEED = 20;

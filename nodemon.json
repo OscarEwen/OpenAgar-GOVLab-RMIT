@@ -1,0 +1,7 @@
+{
+    "delay"     : 10,
+    "script"    : "server.js",
+    "ignore"    : ["bin/"],
+    "ext"       : "js,html,css",
+    "done"      : "done"
+}

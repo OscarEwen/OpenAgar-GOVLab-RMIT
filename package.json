@@ -1,13 +1,20 @@
 {
-  "name": "OpenAgar-GOVLab",
+  "name": "open-agar-govlab",
   "version": "1.0.0",
   "description": "OpenAgar clone written with Socket.IO and HTML5 canvas modified for use with the GOVLab at RMIT, utilising the GOVLabs 14400x3240 display to show the entire playing field in real-time",
   "main": "server/server.js",
+  "type": "commonjs",
   "scripts": {
-    "build": "gulp build",
-    "start": "gulp run",
-    "watch": "gulp watch",
-    "test": "gulp test"
+    "build": "npm run lint && concurrently \"npm run copy:client\" \"npm run build:client\" \"npm run build:server\" mocha",
+    "build:client": "webpack",
+    "build:server": "babel src/server/ --out-dir bin/server/",
+    "copy:client": "copyfiles -u 2 -e \"src/client/**/*.js\" src/client/**/*.* ./bin/client/ & copyfiles -u 2 src/client/index.html ./bin/client/",
+    "start": "npm run build && node ./bin/server/server.js",
+    "watch": "nodemon bin/server/server.js",
+    "test": "npm run lint && mocha",
+    "dev": "concurrently \"npm run copy:client\" \"npm run build:client\" \"npm run build:server\"",
+    "lint": "eslint .",
+    "hello-world": "nodemon -h"
   },
   "repository": {
     "type": "git",
@@ -17,7 +24,6 @@
   "maintainers": [
     {
       "name": "Ian Peake"
-      
     }
   ],
   "license": "MIT",
@@ -28,32 +34,33 @@
     "Mark Mezentseff <S3898294@student.rmit.edu.au> (https://github.com/MarkMez1)"
   ],
   "dependencies": {
-    "@babel/core": "^7.21.8",
-    "@babel/eslint-parser": "^7.21.8",
-    "@babel/preset-env": "^7.21.5",
-    "babel-loader": "^9.1.2",
-    "chai": "^4.3.7",
-    "eslint": "^8.40.0",
-    "eslint-plugin-import": "^2.27.5",
-    "express": "^4.18.2",
-    "gulp": "^4.0.2",
-    "gulp-babel": "^8.0.0",
-    "gulp-eslint": "^6.0.0",
-    "gulp-nodemon": "^2.5.0",
-    "gulp-todo": "^7.1.1",
-    "jshint": "^2.13.6",
-    "mocha": "^10.2.0",
-    "nodemon": "^3.0.1",
+    "express": "^5.1.0",
     "sat": "^0.9.0",
-    "socket.io": "^4.6.1",
-    "socket.io-client": "^4.6.1",
-    "sqlite3": "^5.1.6",
-    "uuid": "^9.0.0",
-    "webpack": "^5.82.1",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
+    "sqlite3": "^5.1.7",
+    "uuid": "^11.1.0",
+    "webpack": "^5.99.5",
     "webpack-stream": "^7.0.0"
   },
   "devDependencies": {
-    "@types/sat": "^0.0.32",
-    "plugin-error": "^2.0.1"
+    "@babel/cli": "^7.27.0",
+    "@babel/core": "^7.26.10",
+    "@babel/eslint-parser": "^7.27.0",
+    "@babel/preset-env": "^7.26.9",
+    "@types/sat": "^0.0.35",
+    "ajv": "^7.2.4",
+    "babel-loader": "^10.0.0",
+    "chai": "^5.2.0",
+    "concurrently": "^9.1.2",
+    "copyfiles": "^2.4.1",
+    "eslint": "^9.24.0",
+    "eslint-plugin-import": "^2.31.0",
+    "globals": "^16.0.0",
+    "jshint": "^2.13.6",
+    "mocha": "^11.1.0",
+    "nodemon": "^3.1.10",
+    "plugin-error": "^2.0.1",
+    "webpack-cli": "^6.0.1"
   }
 }

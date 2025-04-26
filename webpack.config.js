@@ -1,9 +1,12 @@
+const path = require('path');
+
 module.exports = (isProduction) => ({
     entry: "./src/client/js/app.js",
     mode: isProduction ? 'production' : 'development',
     output: {
         library: "app",
-        filename: "app.js"
+        filename: "app.js",
+        path: path.resolve(__dirname, 'bin/client/js')
     },
     devtool: false,
     module: {

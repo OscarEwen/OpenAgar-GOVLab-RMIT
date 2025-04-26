@@ -1,4 +1,4 @@
-const db = require("../sql.js");
+const db = require("../sql.js").default;
 
 const logChatMessage = async (username, message, ipAddress) => {
     const timestamp = new Date().getTime();

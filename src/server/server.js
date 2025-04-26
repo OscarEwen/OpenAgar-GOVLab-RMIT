@@ -7,7 +7,7 @@ const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const SAT = require('sat');
 
-const gameLogic = require('./game-logic');
+const gameLogic = require('./game-logic').default;
 const loggingRepositry = require('./repositories/logging-repository');
 const chatRepository = require('./repositories/chat-repository');
 const config = require('../../config');
