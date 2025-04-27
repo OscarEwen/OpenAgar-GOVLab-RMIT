@@ -34,11 +34,11 @@
     "Mark Mezentseff <S3898294@student.rmit.edu.au> (https://github.com/MarkMez1)"
   ],
   "dependencies": {
+    "better-sqlite3": "^11.9.1",
     "express": "^5.1.0",
     "sat": "^0.9.0",
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1",
-    "sqlite3": "^5.1.7",
     "uuid": "^11.1.0",
     "webpack": "^5.99.5",
     "webpack-stream": "^7.0.0"
