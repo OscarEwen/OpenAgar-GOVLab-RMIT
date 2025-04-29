@@ -1,10 +1,12 @@
-const util = require("./util");
+import * as util from "./util.js";
 
-function getPosition(isUniform, radius, uniformPositions) {
+const getPosition = function (isUniform, radius, uniformPositions) {
     return isUniform ? util.uniformPosition(uniformPositions, radius) : util.randomPosition(radius);
 }
 
-function isVisibleEntity(entity, player, addThreshold = true) {
+export {getPosition};
+
+const isVisibleEntity = function (entity, player, addThreshold = true) {
     const entityHalfSize = entity.radius + (addThreshold ? entity.radius * 0.1 : 0);
     let result = util.testRectangleRectangle(
         entity.x, entity.y, entityHalfSize, entityHalfSize,
@@ -13,7 +15,4 @@ function isVisibleEntity(entity, player, addThreshold = true) {
     return result
 }
 
-module.exports = {
-    getPosition,
-    isVisibleEntity
-}
+export {isVisibleEntity};

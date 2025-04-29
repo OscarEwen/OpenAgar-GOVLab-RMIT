@@ -1,25 +1,37 @@
 /*jslint bitwise: true, node: true */
-'use strict';
+import express from 'express';
+import { createServer } from "http";
+import { Server } from 'socket.io';
+import SAT from 'sat';
 
-const express = require('express');
-const app = express();
-const http = require('http').Server(app);
-const io = require('socket.io')(http);
-const SAT = require('sat');
+import gameLogic from './game-logic.js';
+import loggingRepositry from './repositories/logging-repository.js';
+import chatRepository from './repositories/chat-repository.js';
+import * as config from '../config.js';
+import * as util from './lib/util.js';
+import * as mapUtils from './map/map.js';
+import * as entityUtils from "./lib/entityUtils.js";
 
-const gameLogic = require('./game-logic').default;
-const loggingRepositry = require('./repositories/logging-repository');
-const chatRepository = require('./repositories/chat-repository');
-const config = require('../../config');
-const util = require('./lib/util');
-const mapUtils = require('./map/map');
-const {getPosition} = require("./lib/entityUtils");
+const __dirname = import.meta.dirname;
+
+let app = express();
+
+app.get('/', (req, res) => {
+    res.sendFile(new URL('./../client/index.html', import.meta.url).pathname);
+});
 
 let map = new mapUtils.Map(config);
 
 let sockets = {};
 let spectators = [];
 let spectatorPlayers = {};
+
+let spectatorNum = spectators.length;
+let prevSpectatorNum = null;
+
+let playerNum = map.players.data.length;
+let prevPlayerNum = null;
+
 const INIT_MASS_LOG = util.mathLog(config.defaultPlayerMass, config.slowBase);
 
 let leaderboard = [];
@@ -27,9 +39,24 @@ let leaderboardChanged = false;
 
 const Vector = SAT.Vector;
 
-app.use(express.static(__dirname + '/../client'));
+const httpServer = createServer(app);
+let io = new Server(httpServer, {});
 
-io.on('connection', function (socket) {
+io.engine.on("connection_error", (err) => {
+  console.log(err.req);      // the request object
+  console.log(err.code);     // the error code, for example 1
+  console.log(err.message);  // the error message, for example "Session ID unknown"
+  console.log(err.context);  // some additional error context
+});
+
+app.use('/', express.static(__dirname + '/../client'));
+app.use('/js', express.static(__dirname + '/../client/js'));
+app.use('/audio', express.static(__dirname + '/../client/audio'));
+app.use('/css', express.static(__dirname + '/../client/css'));
+app.use('/img', express.static(__dirname + '/../client/img'));
+
+
+io.on('connection', (socket) => {
     let type = socket.handshake.query.type;
     console.log('User has connected: ', type);
     switch (type) {
@@ -41,19 +68,19 @@ io.on('connection', function (socket) {
             break;
         default:
             console.log('Unknown user type, not doing anything.');
-    }
+    };
 });
 
 function generateSpawnpoint() {
     let radius = util.massToRadius(config.defaultPlayerMass);
-    return getPosition(config.newPlayerInitialPosition === 'farthest', radius, map.players.data)
+    return entityUtils.getPosition(config.newPlayerInitialPosition === 'farthest', radius, map.players.data)
 }
 
 
 const addPlayer = (socket) => {
     var currentPlayer = new mapUtils.playerUtils.Player(socket.id);
 
-    socket.on('gotit', function (clientPlayerData) {
+    socket.on('gotit', (clientPlayerData) => {
         console.log('[INFO] Player ' + clientPlayerData.name + ' connecting!');
         currentPlayer.init(generateSpawnpoint(), config.defaultPlayerMass);
 
@@ -342,7 +369,16 @@ const gameloop = () => {
 };
 
 const sendUpdates = () => {
-    console.log("sendUpdates","spectators",spectators.length,"players",map.players.data.length)
+    if (spectatorNum != prevSpectatorNum || playerNum != prevPlayerNum) {
+        console.log("sendUpdates","spectators",spectators.length,"players",map.players.data.length);
+    }
+    
+    prevSpectatorNum = spectatorNum;
+    spectatorNum = spectators.length;
+
+    prevPlayerNum = playerNum;
+    playerNum = map.players.data.length;
+
     spectators.forEach(function (socketID) {
       let player = spectatorPlayers[socketID]
       map.doPlayerVisibility(player, function (playerData, visiblePlayers, visibleFood, visibleMass, visibleViruses) {
@@ -381,7 +417,7 @@ const updateSpectator = (socketID) => {
         name: ''
     };
     */
-    let playerData = spectatorPlayers[socket.id]
+    let playerData = spectatorPlayers[socketID];
     sockets[socketID].emit('serverTellPlayerMove', playerData, map.players.data, map.food.data, map.massFood.data, map.viruses.data);
     if (leaderboardChanged) {
         sendLeaderboard(sockets[socketID]);
@@ -394,5 +430,8 @@ setInterval(sendUpdates, 1000 / config.networkUpdateFactor);
 
 // Don't touch, IP configurations.
 var ipaddress = process.env.OPENSHIFT_NODEJS_IP || process.env.IP || config.host;
+
 var serverport = process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || config.port;
-http.listen(serverport, ipaddress, () => console.log('[DEBUG] Listening on ' + ipaddress + ':' + serverport));
+
+httpServer.listen(serverport, ipaddress, () => console.log('[DEBUG] Listening on ' + ipaddress + ':' + serverport));
+//app.listen(serverport, ipaddress, () => console.log('[DEBUG] Listening on ' + ipaddress + ':' + serverport));

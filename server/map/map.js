@@ -1,18 +1,23 @@
-"use strict";
+import * as entityUtils from "../lib/entityUtils.js";
 
-const {isVisibleEntity} = require("../lib/entityUtils");
+import * as foodUtils from './food.js';
+export { foodUtils };
 
-exports.foodUtils = require('./food');
-exports.virusUtils = require('./virus');
-exports.massFoodUtils = require('./massFood');
-exports.playerUtils = require('./player');
+import * as virusUtils from './virus.js';
+export { virusUtils };
 
-exports.Map = class {
+import * as massFoodUtils from './massFood.js';
+export { massFoodUtils };
+
+import * as playerUtils from './player.js';
+export { playerUtils };
+
+const Map = class {
     constructor(config) {
-        this.food = new exports.foodUtils.FoodManager(config.foodMass, config.foodUniformDisposition);
-        this.viruses = new exports.virusUtils.VirusManager(config.virus);
-        this.massFood = new exports.massFoodUtils.MassFoodManager();
-        this.players = new exports.playerUtils.PlayerManager();
+        this.food = new foodUtils.FoodManager(config.foodMass, config.foodUniformDisposition);
+        this.viruses = new virusUtils.VirusManager(config.virus);
+        this.massFood = new massFoodUtils.MassFoodManager();
+        this.players = new playerUtils.PlayerManager();
     }
 
     balanceMass(foodMass, gameMass, maxFood, maxVirus) {
@@ -38,9 +43,9 @@ exports.Map = class {
 
     doPlayerVisibility(currentPlayer,callback) {
         console.log("doPlayerVisibility",currentPlayer.id,currentPlayer.name,currentPlayer)
-	var visibleFood = this.food.data.filter(entity => isVisibleEntity(entity, currentPlayer, false));
-	var visibleViruses = this.viruses.data.filter(entity => isVisibleEntity(entity, currentPlayer));
-	var visibleMass = this.massFood.data.filter(entity => isVisibleEntity(entity, currentPlayer));
+	var visibleFood = this.food.data.filter(entity => entityUtils.isVisibleEntity(entity, currentPlayer, false));
+	var visibleViruses = this.viruses.data.filter(entity => entityUtils.isVisibleEntity(entity, currentPlayer));
+	var visibleMass = this.massFood.data.filter(entity => entityUtils.isVisibleEntity(entity, currentPlayer));
 	const extractData = (player) => {
 	    return {
 		x: player.x,
@@ -56,7 +61,7 @@ exports.Map = class {
 	var visiblePlayers = [];
 	for (let player of this.players.data) {
 	    for (let cell of player.cells) {
-		if (isVisibleEntity(cell, currentPlayer)) {
+		if (entityUtils.isVisibleEntity(cell, currentPlayer)) {
 		    if (currentPlayer.id!==player.id) { console.log("player",currentPlayer.id,currentPlayer.name,"sees",player.id,player.name) }
 		    visiblePlayers.push(extractData(player));
 		    break;
@@ -77,3 +82,5 @@ exports.Map = class {
 	this.enumerateVisibility(this.players.data,callback);
     }
 }
+
+export { Map };

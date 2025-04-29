@@ -1,8 +1,6 @@
-"use strict";
-
-const util = require('../lib/util');
-const { v4: uuidv4 } = require('uuid');
-const {getPosition} = require("../lib/entityUtils");
+import * as util from '../lib/util.js';
+import { v4 as uuidv4 } from 'uuid';
+import * as entity from "../lib/entityUtils.js";
 
 class Food {
     constructor(position, radius) {
@@ -15,7 +13,7 @@ class Food {
     }
 }
 
-exports.FoodManager = class {
+const FoodManager = class {
     constructor(foodMass, foodUniformDisposition) {
         this.data = [];
         this.foodMass = foodMass;
@@ -25,7 +23,7 @@ exports.FoodManager = class {
     addNew(number) {
         const radius = util.massToRadius(this.foodMass);
         while (number--) {
-            const position = getPosition(this.foodUniformDisposition, radius, this.data)
+            const position = entity.getPosition(this.foodUniformDisposition, radius, this.data)
             this.data.push(new Food(position, radius));
         }
     }
@@ -42,3 +40,5 @@ exports.FoodManager = class {
         }
     }
 };
+
+export {FoodManager};

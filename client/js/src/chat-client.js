@@ -1,24 +1,24 @@
-var global = require('./global');
+import * as config from './config.js';
 
 class ChatClient {
     constructor(params) {
-        this.canvas = global.canvas;
-        this.socket = global.socket;
-        this.mobile = global.mobile;
-        this.player = global.player;
+        this.canvas = config.canvas;
+        this.socket = config.socket;
+        this.mobile = config.mobile;
+        this.player = config.player;
         var self = this;
         this.commands = {};
         var input = document.getElementById('chatInput');
-        input.addEventListener('keypress', this.sendChat.bind(this));
+        input.addEventListener('keyup', this.sendChat.bind(this));
         input.addEventListener('keyup', function(key) {
             input = document.getElementById('chatInput');
-            key = key.which || key.keyCode;
-            if (key === global.KEY_ESC) {
+            key = key.key; //.which || key.keyCode;
+            if (key === config.KEY_ESC) {
                 input.value = '';
                 self.canvas.cv.focus();
             }
         });
-        global.chatClient = this;
+        config.chatClient = this;
     }
 
     // TODO: Break out many of these GameControls into separate classes.
@@ -60,7 +60,7 @@ class ChatClient {
         this.registerCommand('kick', 'Kick a player, for admins only.', function (args) {
             self.socket.emit('kick', args);
         });
-        global.chatClient = this;
+        config.chatClient = this;
     }
 
     // Chat box implementation for the users.
@@ -109,9 +109,9 @@ class ChatClient {
         var commands = this.commands,
             input = document.getElementById('chatInput');
 
-        key = key.which || key.keyCode;
+        key = key.key; //.which || key.keyCode;
 
-        if (key === global.KEY_ENTER) {
+        if (key === config.KEY_ENTER) {
             var text = input.value.replace(/(<([^>]+)>)/ig,'');
             if (text !== '') {
 
@@ -157,7 +157,7 @@ class ChatClient {
 
     checkLatency() {
         // Ping.
-        global.startPingTime = Date.now();
+        config.startPingTime = Date.now();
         this.socket.emit('pingcheck');
     }
 
@@ -167,56 +167,56 @@ class ChatClient {
         var LINELIGHT = '#000000',
             LINEDARK = '#ffffff';
 
-        if (global.backgroundColor === LIGHT) {
-            global.backgroundColor = DARK;
-            global.lineColor = LINEDARK;
+        if (config.backgroundColor === LIGHT) {
+            config.backgroundColor = DARK;
+            config.lineColor = LINEDARK;
             this.addSystemLine('Dark mode enabled.');
         } else {
-            global.backgroundColor = LIGHT;
-            global.lineColor = LINELIGHT;
+            config.backgroundColor = LIGHT;
+            config.lineColor = LINELIGHT;
             this.addSystemLine('Dark mode disabled.');
         }
     }
 
     toggleBorder() {
-        if (!global.borderDraw) {
-            global.borderDraw = true;
+        if (!config.borderDraw) {
+            config.borderDraw = true;
             this.addSystemLine('Showing border.');
         } else {
-            global.borderDraw = false;
+            config.borderDraw = false;
             this.addSystemLine('Hiding border.');
         }
     }
 
     toggleMass() {
-        if (global.toggleMassState === 0) {
-            global.toggleMassState = 1;
+        if (config.toggleMassState === 0) {
+            config.toggleMassState = 1;
             this.addSystemLine('Viewing mass enabled.');
         } else {
-            global.toggleMassState = 0;
+            config.toggleMassState = 0;
             this.addSystemLine('Viewing mass disabled.');
         }
     }
 
     toggleContinuity() {
-        if (!global.continuity) {
-            global.continuity = true;
+        if (!config.continuity) {
+            config.continuity = true;
             this.addSystemLine('Continuity enabled.');
         } else {
-            global.continuity = false;
+            config.continuity = false;
             this.addSystemLine('Continuity disabled.');
         }
     }
 
     toggleRoundFood(args) {
-        if (args || global.foodSides < 10) {
-            global.foodSides = (args && !isNaN(args[0]) && +args[0] >= 3) ? +args[0] : 10;
+        if (args || config.foodSides < 10) {
+            config.foodSides = (args && !isNaN(args[0]) && +args[0] >= 3) ? +args[0] : 10;
             this.addSystemLine('Food is now rounded!');
         } else {
-            global.foodSides = 5;
+            config.foodSides = 5;
             this.addSystemLine('Food is no longer rounded!');
         }
     }
 }
 
-module.exports = ChatClient;
+export default ChatClient;

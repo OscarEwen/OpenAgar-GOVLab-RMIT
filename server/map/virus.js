@@ -1,8 +1,6 @@
-"use strict";
-
-const util = require('../lib/util');
-const { v4: uuidv4 } = require('uuid');
-const {getPosition} = require("../lib/entityUtils");
+import * as util from '../lib/util.js';
+import { v4 as uuidv4 } from 'uuid';
+import * as entity from "../lib/entityUtils.js";
 
 class Virus {
     constructor(position, radius, mass, config) {
@@ -17,7 +15,7 @@ class Virus {
     }
 }
 
-exports.VirusManager = class {
+const VirusManager = class {
     constructor(virusConfig) {
         this.data = [];
         this.virusConfig = virusConfig;
@@ -31,7 +29,7 @@ exports.VirusManager = class {
         while (number--) {
             var mass = util.randomInRange(this.virusConfig.defaultMass.from, this.virusConfig.defaultMass.to);
             var radius = util.massToRadius(mass);
-            var position = getPosition(this.virusConfig.uniformDisposition, radius, this.data);
+            var position = entity.getPosition(this.virusConfig.uniformDisposition, radius, this.data);
             var newVirus = new Virus(position, radius, mass, this.virusConfig);
             this.pushNew(newVirus);
         }
@@ -41,3 +39,5 @@ exports.VirusManager = class {
         this.data.splice(virusCollision, 1);
     }
 };
+
+export { VirusManager };

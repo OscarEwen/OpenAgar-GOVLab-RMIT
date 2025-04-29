@@ -1,4 +1,4 @@
-const db = require("../sql.js").default;
+import db from "../sql.js";
 
 const logChatMessage = async (username, message, ipAddress) => {
     const timestamp = new Date().getTime();
@@ -7,16 +7,9 @@ const logChatMessage = async (username, message, ipAddress) => {
 
     return new Promise((resolve) => {
         insertChatStmt.run(username, message, ipAddress, timestamp);
-        /*    "INSERT INTO chat_messages (username, message, ip_address, timestamp) VALUES (?, ?, ?, ?)",
-            [username, message, ipAddress, timestamp],
-            (err) => {
-                if (err) console.error(err);
-                resolve();
-            }
-        ); */
     });
 };
 
-module.exports = {
+export default {
     logChatMessage,
 };

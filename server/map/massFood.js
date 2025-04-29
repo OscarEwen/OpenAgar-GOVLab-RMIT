@@ -1,10 +1,8 @@
-"use strict";
+import * as util from '../lib/util.js';
+import gameLogic from '../game-logic.js';
+import sat from 'sat';
 
-const util = require('../lib/util');
-const gameLogic = require('../game-logic').default;
-const sat = require('sat')
-
-exports.MassFood = class {
+const MassFood = class {
 
     constructor(playerFiring, cellIndex, mass) {
         this.id = playerFiring.id;
@@ -40,7 +38,9 @@ exports.MassFood = class {
     }
 }
 
-exports.MassFoodManager = class {
+export { MassFood };
+
+const MassFoodManager = class {
     constructor() {
         this.data = [];
     }
@@ -61,3 +61,5 @@ exports.MassFoodManager = class {
         }
     }
 }
+
+export { MassFoodManager };

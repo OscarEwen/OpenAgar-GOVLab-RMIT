@@ -1,62 +1,76 @@
-var io = require('socket.io-client');
-var render = require('./render');
-var ChatClient = require('./chat-client');
-var Canvas = require('./canvas');
-var global = require('./global');
+import io from 'socket.io-client';
+import render from './render.js';
+import ChatClient from './chat-client.js';
+import Canvas from './canvas.js';
+import * as config from './config.js';
 
-var playerNameInput = document.getElementById('playerNameInput');
-var socket;
+let playerNameInput = document.getElementById('playerNameInput');
+let socket;
 
-var debug = function (args) {
+let debug = (args) => {
     if (console && console.log) {
         console.log(args);
     }
 };
 
 if (/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {
-    global.mobile = true;
+    config.mobile = true;
 }
 
 function startGame(type) {
-    global.playerName = playerNameInput.value.replace(/(<([^>]+)>)/ig, '').substring(0, 25);
-    global.playerType = type;
+    config.playerName = playerNameInput.value.replace(/(<([^>]+)>)/ig, '').substring(0, 25);
+    config.playerType = type;
 
-    global.screen.width = window.innerWidth;
-    global.screen.height = window.innerHeight;
+    config.screen.width = window.innerWidth;
+    config.screen.height = window.innerHeight;
 
     document.getElementById('startMenuWrapper').style.maxHeight = '0px';
     document.getElementById('gameAreaWrapper').style.opacity = 1;
     if (!socket) {
-        socket = io({ query: "type=" + type });
+        socket = io(
+            { 
+                query: {"type" : type}, 
+            }
+        );
+        socket.on("connect_error", (err) => {
+            // the reason of the error, for example "xhr poll error"
+            console.log(err.message);
+          
+            // some additional description, for example the status code of the initial HTTP response
+            console.log(err.description);
+          
+            // some additional context, for example the XMLHttpRequest object
+            console.log(err.context);
+          });
         setupSocket(socket);
     }
-    if (!global.animLoopHandle)
+    if (!config.animLoopHandle)
         animloop();
     socket.emit('respawn');
     window.chat.socket = socket;
     window.chat.registerFunctions();
     window.canvas.socket = socket;
-    global.socket = socket;
+    config.socket = socket;
 }
 
 // Checks if the nick chosen contains valid alphanumeric characters (and underscores).
 function validNick() {
-    var regex = /^\w*$/;
+    let regex = /^\w*$/;
     debug('Regex Test', regex.exec(playerNameInput.value));
     return regex.exec(playerNameInput.value) !== null;
 }
 
-window.onload = function () {
+window.onload = () => {
 
-    var btn = document.getElementById('startButton'),
+    let btn = document.getElementById('startButton'),
         btnS = document.getElementById('spectateButton'),
         nickErrorText = document.querySelector('#startMenu .input-error');
 
-    btnS.onclick = function () {
+    btnS.onclick = () => {
         startGame('spectator');
     };
 
-    btn.onclick = function () {
+    btn.onclick = () => {
 
         // Checks if the nick is valid.
         if (validNick()) {
@@ -67,10 +81,10 @@ window.onload = function () {
         }
     };
 
-    var settingsMenu = document.getElementById('settingsButton');
-    var settings = document.getElementById('settings');
+    let settingsMenu = document.getElementById('settingsButton');
+    let settings = document.getElementById('settings');
 
-    settingsMenu.onclick = function () {
+    settingsMenu.onclick = () => {
         if (settings.style.maxHeight == '300px') {
             settings.style.maxHeight = '0px';
         } else {
@@ -78,10 +92,10 @@ window.onload = function () {
         }
     };
 
-    playerNameInput.addEventListener('keypress', function (e) {
-        var key = e.which || e.keyCode;
+    playerNameInput.addEventListener('keydown', (e) => {
+        let key = e.key; //e.which || e.keyCode;
 
-        if (key === global.KEY_ENTER) {
+        if (key === config.KEY_ENTER) {
             if (validNick()) {
                 nickErrorText.style.opacity = 0;
                 startGame('player');
@@ -94,7 +108,7 @@ window.onload = function () {
 
 // TODO: Break out into GameControls.
 
-var playerConfig = {
+let playerConfig = {
     border: 6,
     textColor: '#FFFFFF',
     textBorder: '#000000',
@@ -102,64 +116,65 @@ var playerConfig = {
     defaultSize: 30
 };
 
-var player = {
+let player = {
     id: -1,
-    x: global.screen.width / 2,
-    y: global.screen.height / 2,
-    screenWidth: global.screen.width,
-    screenHeight: global.screen.height,
-    target: { x: global.screen.width / 2, y: global.screen.height / 2 }
+    x: config.screen.width / 2,
+    y: config.screen.height / 2,
+    screenWidth: config.screen.width,
+    screenHeight: config.screen.height,
+    target: { x: config.screen.width / 2, y: config.screen.height / 2 }
 };
-global.player = player;
 
-var foods = [];
-var viruses = [];
-var fireFood = [];
-var users = [];
-var leaderboard = [];
-var target = { x: player.x, y: player.y };
-global.target = target;
+config.player = player;
+
+let foods = [];
+let viruses = [];
+let fireFood = [];
+let users = [];
+let leaderboard = [];
+let target = { x: player.x, y: player.y };
+config.target = target;
 
 window.canvas = new Canvas();
 window.chat = new ChatClient();
 
-var visibleBorderSetting = document.getElementById('visBord');
+let visibleBorderSetting = document.getElementById('visBord');
 visibleBorderSetting.onchange = settings.toggleBorder;
 
-var showMassSetting = document.getElementById('showMass');
+let showMassSetting = document.getElementById('showMass');
 showMassSetting.onchange = settings.toggleMass;
 
-var continuitySetting = document.getElementById('continuity');
+let continuitySetting = document.getElementById('continuity');
 continuitySetting.onchange = settings.toggleContinuity;
 
-var roundFoodSetting = document.getElementById('roundFood');
+let roundFoodSetting = document.getElementById('roundFood');
 roundFoodSetting.onchange = settings.toggleRoundFood;
 
-var c = window.canvas.cv;
-var graph = c.getContext('2d');
+let c = window.canvas.cv;
+let graph = c.getContext('2d');
 
-$("#feed").click(function () {
+$("#feed").click(() => {
     socket.emit('1');
     window.canvas.reenviar = false;
 });
 
-$("#split").click(function () {
+$("#split").click(() => {
     socket.emit('2');
     window.canvas.reenviar = false;
 });
 
 function handleDisconnect() {
     socket.close();
-    if (!global.kicked) { // We have a more specific error message 
-        render.drawErrorMessage('Disconnected!', graph, global.screen);
+    if (!config.kicked) { // We have a more specific error message 
+        render.drawErrorMessage('Disconnected!', graph, config.screen);
     }
 }
 
 // socket stuff.
 function setupSocket(socket) {
     // Handle ping.
-    socket.on('pongcheck', function () {
-        var latency = Date.now() - global.startPingTime;
+    socket.on('pongcheck', () => {
+        let latency = Date.now() - config.startPingTime;
         debug('Latency: ' + latency + 'ms');
         window.chat.addSystemLine('Ping: ' + latency + 'ms');
     });
@@ -169,24 +184,24 @@ function setupSocket(socket) {
     socket.on('disconnect', handleDisconnect);
 
     // Handle connection.
-    socket.on('welcome', function (playerSettings, gameSizes) {
+    socket.on('welcome', (playerSettings, gameSizes) => {
         player = playerSettings;
-        player.name = global.playerName;
-        player.screenWidth = global.screen.width;
-        player.screenHeight = global.screen.height;
+        player.name = config.playerName;
+        player.screenWidth = config.screen.width;
+        player.screenHeight = config.screen.height;
         player.target = window.canvas.target;
-        global.player = player;
+        config.player = player;
         window.chat.player = player;
         socket.emit('gotit', player);
-        global.gameStart = true;
+        config.gameStart = true;
         window.chat.addSystemLine('Connected to the game!');
         window.chat.addSystemLine('Type <b>-help</b> for a list of commands.');
-        if (global.mobile) {
+        if (config.mobile) {
             document.getElementById('gameAreaWrapper').removeChild(document.getElementById('chatbox'));
         }
         c.focus();
-        global.game.width = gameSizes.width;
-        global.game.height = gameSizes.height;
+        config.game.width = gameSizes.width;
+        config.game.height = gameSizes.height;
         resize();
     });
 
@@ -227,20 +242,20 @@ function setupSocket(socket) {
         document.getElementById('status').innerHTML = status;
     });
 
-    socket.on('serverMSG', function (data) {
+    socket.on('serverMSG', (data) => {
         window.chat.addSystemLine(data);
     });
 
     // Chat.
-    socket.on('serverSendPlayerChat', function (data) {
+    socket.on('serverSendPlayerChat', (data) => {
         window.chat.addChatLine(data.sender, data.message, false);
     });
 
     // Handle movement.
-    socket.on('serverTellPlayerMove', function (playerData, userData, foodsList, massList, virusList) {
+    socket.on('serverTellPlayerMove', (playerData, userData, foodsList, massList, virusList) => {
 	console.log('serverTellPlayerMove',playerData)
 	// TODO: change point?
-        if (global.playerType == 'player') {
+        if (config.playerType == 'player') {
             player.x = playerData.x;
             player.y = playerData.y;
             player.hue = playerData.hue;
@@ -254,27 +269,27 @@ function setupSocket(socket) {
     });
 
     // Death.
-    socket.on('RIP', function () {
-        global.gameStart = false;
-        render.drawErrorMessage('You died!', graph, global.screen);
+    socket.on('RIP', () => {
+        config.gameStart = false;
+        render.drawErrorMessage('You died!', graph, config.screen);
         window.setTimeout(() => {
             document.getElementById('gameAreaWrapper').style.opacity = 0;
             document.getElementById('startMenuWrapper').style.maxHeight = '1000px';
-            if (global.animLoopHandle) {
-                window.cancelAnimationFrame(global.animLoopHandle);
-                global.animLoopHandle = undefined;
+            if (config.animLoopHandle) {
+                window.cancelAnimationFrame(config.animLoopHandle);
+                config.animLoopHandle = undefined;
             }
         }, 2500);
     });
 
-    socket.on('kick', function (reason) {
-        global.gameStart = false;
-        global.kicked = true;
+    socket.on('kick', (reason) => {
+        config.gameStart = false;
+        config.kicked = true;
         if (reason !== '') {
-            render.drawErrorMessage('You were kicked for: ' + reason, graph, global.screen);
+            render.drawErrorMessage('You were kicked for: ' + reason, graph, config.screen);
         }
         else {
-            render.drawErrorMessage('You were kicked!', graph, global.screen);
+            render.drawErrorMessage('You were kicked!', graph, config.screen);
         }
         socket.close();
     });
@@ -289,7 +304,7 @@ const getPosition = (entity, player, screen) => {
     }
 }
 
-window.requestAnimFrame = (function () {
+/*window.requestAnimFrame = (function () {
     return window.requestAnimationFrame ||
         window.webkitRequestAnimationFrame ||
         window.mozRequestAnimationFrame ||
@@ -297,45 +312,45 @@ window.requestAnimFrame = (function () {
         function (callback) {
             window.setTimeout(callback, 1000 / 60);
         };
-})();
+})();*/
 
-window.cancelAnimFrame = (function (handle) {
+/* window.cancelAnimFrame = (function (handle) {
     return window.cancelAnimationFrame ||
         window.mozCancelAnimationFrame;
-})();
+})(); */
 
 function animloop() {
-    global.animLoopHandle = window.requestAnimFrame(animloop);
+    config.animLoopHandle = window.requestAnimationFrame(animloop);
     gameLoop();
 }
 
 function gameLoop() {
-    if (global.gameStart) {
-        graph.fillStyle = global.backgroundColor;
-        graph.fillRect(0, 0, global.screen.width, global.screen.height);
+    if (config.gameStart) {
+        graph.fillStyle = config.backgroundColor;
+        graph.fillRect(0, 0, config.screen.width, config.screen.height);
 
-        render.drawGrid(global, player, global.screen, graph);
+        render.drawGrid(config, player, config.screen, graph);
         foods.forEach(food => {
-            let position = getPosition(food, player, global.screen);
+            let position = getPosition(food, player, config.screen);
             render.drawFood(position, food, graph);
         });
         fireFood.forEach(fireFood => {
-            let position = getPosition(fireFood, player, global.screen);
+            let position = getPosition(fireFood, player, config.screen);
             render.drawFireFood(position, fireFood, playerConfig, graph);
         });
         viruses.forEach(virus => {
-            let position = getPosition(virus, player, global.screen);
+            let position = getPosition(virus, player, config.screen);
             render.drawVirus(position, virus, graph);
         });
 
 
         let borders = { // Position of the borders on the screen
-            left: global.screen.width / 2 - player.x,
-            right: global.screen.width / 2 + global.game.width - player.x,
-            top: global.screen.height / 2 - player.y,
-            bottom: global.screen.height / 2 + global.game.height - player.y
+            left: config.screen.width / 2 - player.x,
+            right: config.screen.width / 2 + config.game.width - player.x,
+            top: config.screen.height / 2 - player.y,
+            bottom: config.screen.height / 2 + config.game.height - player.y
         }
-        if (global.borderDraw) {
+        if (config.borderDraw) {
             render.drawBorder(borders, graph);
         }
 
@@ -350,15 +365,15 @@ function gameLoop() {
                     mass: users[i].cells[j].mass,
                     name: users[i].name,
                     radius: users[i].cells[j].radius,
-                    x: users[i].cells[j].x - player.x + global.screen.width / 2,
-                    y: users[i].cells[j].y - player.y + global.screen.height / 2
+                    x: users[i].cells[j].x - player.x + config.screen.width / 2,
+                    y: users[i].cells[j].y - player.y + config.screen.height / 2
                 });
             }
         }
-        cellsToDraw.sort(function (obj1, obj2) {
+        cellsToDraw.sort((obj1, obj2) => {
             return obj1.mass - obj2.mass;
         });
-        render.drawCells(cellsToDraw, playerConfig, global.toggleMassState, borders, graph);
+        render.drawCells(cellsToDraw, playerConfig, config.toggleMassState, borders, graph);
 
         socket.emit('0', window.canvas.target); // playerSendTarget "Heartbeat".
     }
@@ -369,15 +384,16 @@ window.addEventListener('resize', resize);
 function resize() {
     if (!socket) return;
 
-    player.screenWidth = c.width = global.screen.width = global.playerType == 'player' ? window.innerWidth : global.game.width;
-    //player.screenWidth = c.width = global.screen.width = window.innerWidth
-    player.screenHeight = c.height = global.screen.height = global.playerType == 'player' ? window.innerHeight : global.game.height;
-    //player.screenHeight = c.height = global.screen.height =  window.innerHeight
+    player.screenWidth = c.width = config.screen.width = config.playerType == 'player' ? window.innerWidth : config.game.width;
+    //player.screenWidth = c.width = config.screen.width = window.innerWidth
+    player.screenHeight = c.height = config.screen.height = config.playerType == 'player' ? window.innerHeight : config.game.height;
+    //player.screenHeight = c.height = config.screen.height =  window.innerHeight
 
-    if (global.playerType == 'spectator') {
-        player.x = global.game.width / 2;
-        player.y = global.game.height / 2;
+    if (config.playerType == 'spectator') {
+        player.x = config.game.width / 2;
+        player.y = config.game.height / 2;
     }
 
-    socket.emit('windowResized', { screenWidth: global.screen.width, screenHeight: global.screen.height });
+    socket.emit('windowResized', { screenWidth: config.screen.width, screenHeight: config.screen.height });
 }
+
