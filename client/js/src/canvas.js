@@ -138,7 +138,7 @@ class Canvas {
 
     // Chat command callback functions.
     keyInput(event) {
-    	var key = event.key //which || event.keyCode;
+    	var key = event.key; //which || event.keyCode;
     	if (key === config.KEY_FIREFOOD && this.parent.reenviar) {
             this.parent.socket.emit('1');
             this.parent.reenviar = false;

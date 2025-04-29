@@ -46,7 +46,7 @@ const MassFoodManager = class {
     }
 
     addNew(playerFiring, cellIndex, mass)  {
-        this.data.push(new exports.MassFood(playerFiring, cellIndex, mass));
+        this.data.push(new MassFood(playerFiring, cellIndex, mass));
     }
 
     move (gameWidth, gameHeight) {

@@ -8,9 +8,9 @@
     "build": "npm run lint && concurrently \"npm run build:client\" \"node --test\"",
     "build:client": "webpack",
     "start": "npm run build && node ./server/server.js",
-    "watch": "nodemon ./server/server.js",
+    "watch": "concurrently \"webpack --watch\" \"nodemon ./server/server.js\"",
     "test": "npm run lint && node --test",
-    "dev": "concurrently \"npm run copy:client\" \"npm run build:client\" \"npm run build:server\"",
+    "dev": "concurrently \"npm run build:client\" \"npm run build:server\"",
     "lint": "eslint ."
   },
   "repository": {

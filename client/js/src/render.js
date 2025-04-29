@@ -102,7 +102,7 @@ const drawCells = (cells, playerConfig, toggleMassState, borders, graph) => {
         graph.fillText(cell.name, cell.x, cell.y);
 
         // Draw the mass (if enabled)
-        if (toggleMassState === 1) {
+        if (toggleMassState/* === 1*/) {
             graph.font = 'bold ' + Math.max(fontSize / 3 * 2, 10) + 'px sans-serif';
             if (cell.name.length === 0) fontSize = 0;
             graph.strokeText(Math.round(cell.mass), cell.x, cell.y + fontSize);

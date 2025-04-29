@@ -42,34 +42,38 @@ const Map = class {
     }
 
     doPlayerVisibility(currentPlayer,callback) {
-        console.log("doPlayerVisibility",currentPlayer.id,currentPlayer.name,currentPlayer)
-	var visibleFood = this.food.data.filter(entity => entityUtils.isVisibleEntity(entity, currentPlayer, false));
-	var visibleViruses = this.viruses.data.filter(entity => entityUtils.isVisibleEntity(entity, currentPlayer));
-	var visibleMass = this.massFood.data.filter(entity => entityUtils.isVisibleEntity(entity, currentPlayer));
-	const extractData = (player) => {
-	    return {
-		x: player.x,
-		y: player.y,
-		cells: player.cells,
-		massTotal: Math.round(player.massTotal),
-		hue: player.hue,
-		id: player.id,
-		name: player.name,
-	        type: player.type
-	    };
-	}
-	var visiblePlayers = [];
-	for (let player of this.players.data) {
-	    for (let cell of player.cells) {
-		if (entityUtils.isVisibleEntity(cell, currentPlayer)) {
-		    if (currentPlayer.id!==player.id) { console.log("player",currentPlayer.id,currentPlayer.name,"sees",player.id,player.name) }
-		    visiblePlayers.push(extractData(player));
-		    break;
-		}
-	    }
-	    //if (currentPlayer.id!==player.id) { console.log("player",currentPlayer.id,currentPlayer.name,"sees",player.id,player.name) }
-	}
-	callback(extractData(currentPlayer), visiblePlayers, visibleFood, visibleMass, visibleViruses);
+        //console.log("doPlayerVisibility",currentPlayer.id,currentPlayer.name,currentPlayer);
+        
+        var visibleFood = this.food.data.filter(entity => entityUtils.isVisibleEntity(entity, currentPlayer, false));
+
+        var visibleViruses = this.viruses.data.filter(entity => entityUtils.isVisibleEntity(entity, currentPlayer));
+
+        var visibleMass = this.massFood.data.filter(entity => entityUtils.isVisibleEntity(entity, currentPlayer));
+
+        const extractData = (player) => {
+            return {
+            x: player.x,
+            y: player.y,
+            cells: player.cells,
+            massTotal: Math.round(player.massTotal),
+            hue: player.hue,
+            id: player.id,
+            name: player.name,
+                type: player.type
+            };
+        }
+        var visiblePlayers = [];
+        for (let player of this.players.data) {
+            for (let cell of player.cells) {
+            if (entityUtils.isVisibleEntity(cell, currentPlayer)) {
+                if (currentPlayer.id!==player.id) { console.log("player",currentPlayer.id,currentPlayer.name,"sees",player.id,player.name) }
+                visiblePlayers.push(extractData(player));
+                break;
+            }
+            }
+            //if (currentPlayer.id!==player.id) { console.log("player",currentPlayer.id,currentPlayer.name,"sees",player.id,player.name) }
+        }
+        callback(extractData(currentPlayer), visiblePlayers, visibleFood, visibleMass, visibleViruses);
     }
 
     enumerateVisibility(players,callback) {

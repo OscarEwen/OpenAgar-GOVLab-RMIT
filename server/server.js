@@ -207,7 +207,7 @@ const addPlayer = (socket) => {
         }
     });
 
-    socket.on('1', function () {
+    socket.on('1', () => {
         // Fire food.
         const minCellMass = config.defaultPlayerMass + config.fireFood;
         for (let i = 0; i < currentPlayer.cells.length; i++) {
@@ -236,15 +236,15 @@ const addSpectator = (socket) => {
 	}
 	let sx = config.gameWidth / 2
 	let sy = config.gameHeight / 2
-        let newPlayer = {
-	  x: sx,
-	  y: sy,
-	  cells: [],
-	  massTotal: 0,
-	  hue: 100,
-	  id: socket.id,
-	  name: player.name,
-	  type: "spectator",
+    let newPlayer = {
+        x: sx,
+        y: sy,
+        cells: [],
+        massTotal: 0,
+        hue: 100,
+        id: socket.id,
+        name: player.name,
+        type: "spectator",
 	}
         spectatorPlayers[socket.id] = newPlayer
 	if (player!==null && player!==undefined) {
@@ -434,4 +434,3 @@ var ipaddress = process.env.OPENSHIFT_NODEJS_IP || process.env.IP || config.host
 var serverport = process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || config.port;
 
 httpServer.listen(serverport, ipaddress, () => console.log('[DEBUG] Listening on ' + ipaddress + ':' + serverport));
-//app.listen(serverport, ipaddress, () => console.log('[DEBUG] Listening on ' + ipaddress + ':' + serverport));
