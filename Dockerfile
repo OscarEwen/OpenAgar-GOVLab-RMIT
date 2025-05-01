@@ -2,7 +2,9 @@ FROM node:23-alpine
 
 # install python, pip and dependencies for bots
 RUN apk add --no-cache python3 py3-pip
-RUN pip3 install --no-cache-dir python-socketio requests websocket-client
+RUN rm /usr/lib/python*/EXTERNALLY-MANAGED && \
+    python3 -m ensurepip && \
+    pip3 install python-socketio requests websocket-client
 
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
