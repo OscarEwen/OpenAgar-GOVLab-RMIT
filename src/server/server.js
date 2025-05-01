@@ -1,6 +1,8 @@
 /*jslint bitwise: true, node: true */
 'use strict';
 
+const os = require('node:os');
+
 const express = require('express');
 const app = express();
 const http = require('http').Server(app);
@@ -407,7 +409,9 @@ function spawnRandyBots(amount) {
 
     for (let i = 0; i < amount; i++) {
 
-        const pyBotScript = spawn('python', ['src/bot/bot.py']);
+        let python3Cmd = os.platform() == 'win32' ? 'python' : 'python3';
+
+        const pyBotScript = spawn(python3Cmd, ['src/bot/bot.py']);
 
         pyBotScript.stdout.on('data', (data) => {//error chks
 
