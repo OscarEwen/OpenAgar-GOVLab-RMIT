@@ -66,7 +66,7 @@ const Map = class {
         for (let player of this.players.data) {
             for (let cell of player.cells) {
             if (entityUtils.isVisibleEntity(cell, currentPlayer)) {
-                if (currentPlayer.id!==player.id) { console.log("player",currentPlayer.id,currentPlayer.name,"sees",player.id,player.name) }
+                //if (currentPlayer.id!==player.id) { console.log("player",currentPlayer.id,currentPlayer.name,"sees",player.id,player.name) }
                 visiblePlayers.push(extractData(player));
                 break;
             }

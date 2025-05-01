@@ -1,16 +1,22 @@
 /*jslint bitwise: true, node: true */
+'use strict';
+
+import os from 'node:os';
 import express from 'express';
 import { createServer } from "http";
 import { Server } from 'socket.io';
 import SAT from 'sat';
 
 import gameLogic from './game-logic.js';
+
 import loggingRepositry from './repositories/logging-repository.js';
 import chatRepository from './repositories/chat-repository.js';
 import * as config from '../config.js';
 import * as util from './lib/util.js';
 import * as mapUtils from './map/map.js';
 import * as entityUtils from "./lib/entityUtils.js";
+
+import { spawn } from 'child_process';
 
 const __dirname = import.meta.dirname;
 
@@ -432,5 +438,39 @@ setInterval(sendUpdates, 1000 / config.networkUpdateFactor);
 var ipaddress = process.env.OPENSHIFT_NODEJS_IP || process.env.IP || config.host;
 
 var serverport = process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || config.port;
+httpServer.listen(serverport, ipaddress, () => console.log('[DEBUG] Listening on ' + ipaddress + ':' + serverport));  
 
-httpServer.listen(serverport, ipaddress, () => console.log('[DEBUG] Listening on ' + ipaddress + ':' + serverport));
+// function to spawn bots
+
+function spawnRandyBots(amount) {
+
+    for (let i = 0; i < amount; i++) {
+
+        let python3Cmd = os.platform() == 'win32' ? 'python' : 'python3';
+
+        const pyBotScript = spawn(python3Cmd, ['bot/bot.py']);
+
+        pyBotScript.stdout.on('data', (data) => {//error chks
+
+            console.log(`[RANDYBOT ${i}] ${data}`);
+
+        });
+
+        pyBotScript.stderr.on('data', (data) => {
+
+            console.error(`[RANDYBOT ${i} ERROR] ${data}`);
+
+        });
+
+        pyBotScript.on('close', (code) => {
+
+            console.log(`[RANDYBOT ${i}] Process exited with code ${code}`);
+
+        });
+
+    }
+
+}
+
+// spawn however many bots you want
+spawnRandyBots(10);
