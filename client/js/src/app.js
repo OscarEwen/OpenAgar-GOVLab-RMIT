@@ -153,12 +153,12 @@ roundFoodSetting.onchange = settings.toggleRoundFood;
 let c = window.canvas.cv;
 let graph = c.getContext('2d');
 
-$("#feed").click(() => {
+document.getElementById("feed").addEventListener('click', () => {
     socket.emit('1');
     window.canvas.reenviar = false;
 });
 
-$("#split").click(() => {
+document.getElementById("split").addEventListener('click', () => {
     socket.emit('2');
     window.canvas.reenviar = false;
 });
