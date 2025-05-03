@@ -138,25 +138,51 @@ config.target = target;
 window.canvas = new Canvas();
 window.chat = new ChatClient();
 
+// Setup event listener for border visibility with initial setting
 let visibleBorderSetting = document.getElementById('visBord');
-visibleBorderSetting.onchange = settings.toggleBorder;
+config.borderDraw = visibleBorderSetting.checked;
+visibleBorderSetting.addEventListener('change', (e) => {
+    config.borderDraw = visibleBorderSetting.checked;
+});
 
-// Get shorthand for showmass setting
-let showMassSetting = document.getElementById('showMass');
-// Set inital mass visibility based on HTML initial state
-config.toggleMassState = showMassSetting.checked;
-// Setup event listener for mass setting
+// Setup event listener for mass setting with initial setting
+let showMassSetting = document.getElementById('showMass'); // Shorthand
+config.toggleMassState = showMassSetting.checked; // HTML Initial State
 showMassSetting.addEventListener('change', (e) => {
     config.toggleMassState = showMassSetting.checked;
 });
 
-// showMassSetting.onchange = settings.toggleMass;
-
+// Setup event listener for continue moving setting with initial setting
 let continuitySetting = document.getElementById('continuity');
-continuitySetting.onchange = settings.toggleContinuity;
+config.continuity = continuitySetting.checked;
+continuitySetting.addEventListener('change', (e) => {
+    config.continuity = continuitySetting.checked;
+});
 
-let roundFoodSetting = document.getElementById('roundFood');
-roundFoodSetting.onchange = settings.toggleRoundFood;
+// Setup event listener for darkmode
+let darkmodeSetting = document.getElementById('darkMode');
+config.darkMode = darkmodeSetting.checked;
+
+if (config.darkMode) {
+    config.backgroundColor = config.DARK;
+    config.lineColor = config.LINEDARK;
+}
+else {
+    config.backgroundColor = config.LIGHT;
+    config.lineColor = config.LINELIGHT;
+}
+
+darkmodeSetting.addEventListener('change', (e) => {
+    config.darkMode = darkmodeSetting.checked;
+    if (config.darkMode) {
+        config.backgroundColor = config.DARK;
+        config.lineColor = config.LINEDARK;
+    }
+    else {
+        config.backgroundColor = config.LIGHT;
+        config.lineColor = config.LINELIGHT;
+    }
+});
 
 let c = window.canvas.cv;
 let graph = c.getContext('2d');
