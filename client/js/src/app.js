@@ -142,7 +142,12 @@ let visibleBorderSetting = document.getElementById('visBord');
 visibleBorderSetting.onchange = settings.toggleBorder;
 
 let showMassSetting = document.getElementById('showMass');
-showMassSetting.onchange = settings.toggleMass;
+config.toggleMassState = showMassSetting.checked;
+showMassSetting.addEventListener('change', (e) => {
+    config.toggleMassState = showMassSetting.checked;
+});
+
+// showMassSetting.onchange = settings.toggleMass;
 
 let continuitySetting = document.getElementById('continuity');
 continuitySetting.onchange = settings.toggleContinuity;
