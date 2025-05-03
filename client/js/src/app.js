@@ -141,8 +141,11 @@ window.chat = new ChatClient();
 let visibleBorderSetting = document.getElementById('visBord');
 visibleBorderSetting.onchange = settings.toggleBorder;
 
+// Get shorthand for showmass setting
 let showMassSetting = document.getElementById('showMass');
+// Set inital mass visibility based on HTML initial state
 config.toggleMassState = showMassSetting.checked;
+// Setup event listener for mass setting
 showMassSetting.addEventListener('change', (e) => {
     config.toggleMassState = showMassSetting.checked;
 });
