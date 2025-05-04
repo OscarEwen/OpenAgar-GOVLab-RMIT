@@ -104,10 +104,20 @@ class Bot:
         for player in self.visiblePlayers:
             if player.get("id") != self.sio.sid:  # make sure to skip itself
                 playerMass = player.get("massTotal", 0)
+                playerCells = player.get("cells", [])
                 playerPos = {"x": player.get("x", 0), "y": player.get("y", 0)}
                 distance = self.distance(self.position, playerPos) # find distance between itself and other player
+
+                smallerCellInRange = False
+
+                if playerCells:
+                    for cell in playerCells:
+                        cellMass = cell.get("mass", 0)
+                        if cellMass * self.massAdvantageRatio < self.mass:
+                            smallerCellInRange = True
+                            break
                 
-                if playerMass * self.massAdvantageRatio < self.mass and distance < self.attack_range:
+                if (playerMass * self.massAdvantageRatio < self.mass or smallerCellInRange) and distance < self.attack_range:
                     smallerEnemyInRange = True # if other player is smaller than itself, update to True
                 elif playerMass > self.mass * self.massAdvantageRatio and distance < self.flee_range:
                     largerEnemyInRange = True # if other player is larger than itself, update to True
@@ -178,12 +188,12 @@ class Bot:
                 # <!> Can tweak range for spltting to attack <!>
                 if (self.canSplit and self.mass >= player.get("massTotal", 0) * 2.5 and 
                     self.mass > 35 and distToTarget < 150):
-
+                    
                     self.split()
                     
-                    # update split variables
+                    # Update split variables
                     self.lastSplitTime = currentTime
-                    self.canSplit = False  # prevent splitting again until cooldown passes
+                    self.canSplit = False # prevent splitting again until cooldown passes
                     
             else:
                 # if no smaller player is found, handle SmallerEnemyOutOfRange event
@@ -291,7 +301,18 @@ class Bot:
         for player in self.visiblePlayers:
             if player.get("id") != self.sio.sid:  # make sure to skip itself
                 playerMass = player.get("massTotal", 0)
-                if playerMass * self.massAdvantageRatio < self.mass:
+                playerCells = player.get("cells", [])
+
+                smallerCellInRange = False
+
+                if playerCells:
+                    for cell in playerCells:
+                        cellMass = cell.get("mass", 0)
+                        if cellMass * self.massAdvantageRatio < self.mass:
+                            smallerCellInRange = True
+                            break
+                            
+                if playerMass * self.massAdvantageRatio < self.mass or smallerCellInRange:
                     playerPos = {"x": player.get("x", 0), "y": player.get("y", 0)}
                     dist = self.distance(self.position, playerPos)
                     if dist < minDistance:
