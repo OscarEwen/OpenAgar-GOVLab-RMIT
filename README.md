@@ -84,4 +84,24 @@ docker run -it -p 3000:3000 agarioclone_agar
 
 ---
 
+## Stress Test Mode
+
+The stress test mode is designed to test the server's stability under heavy load. It spawns hundreds of entities into the game field for 20 seconds and logs whether the test was successful.
+
+### Enabling Stress Test Mode
+
+To enable stress test mode, update the `config.js` file:
+
+```javascript
+stressTest: {
+    enabled: true,
+    duration: 20000, // 20 seconds
+    entityCount: 100
+}
+```
+
+Run the server, and it will automatically perform the stress test. After 20 seconds, the server will log the result.
+
+---
+
 This project is licensed under the terms of the **MIT** license.

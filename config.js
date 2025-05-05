@@ -33,5 +33,10 @@ module.exports = {
     minMassLoss: 50,
     sqlinfo: {
       fileName: "db.sqlite3",
+    },
+    stressTest: {
+        enabled: false,
+        duration: 20000, // 20 seconds
+        entityCount: 100
     }
 };

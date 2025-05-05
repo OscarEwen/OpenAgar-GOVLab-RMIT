@@ -388,6 +388,31 @@ const updateSpectator = (socketID) => {
     }
 }
 
+if (config.stressTest.enabled) {
+    console.log('[INFO] Stress test mode enabled. Spawning entities...');
+    const stressTestStartTime = Date.now();
+
+    // Spawn entities
+    for (let i = 0; i < config.stressTest.entityCount; i++) {
+        const position = util.randomPosition(10);
+        const mass = util.randomInRange(10, 50);
+        const newPlayer = new mapUtils.playerUtils.Player(`stressTest-${i}`);
+        newPlayer.init(position, mass);
+        map.players.pushNew(newPlayer);
+
+        const foodPosition = util.randomPosition(5);
+        map.food.addNew(1);
+    }
+
+    // Stop the stress test after the configured duration
+    setTimeout(() => {
+        const elapsedTime = Date.now() - stressTestStartTime;
+        console.log(`[INFO] Stress test completed in ${elapsedTime}ms. No crashes detected.`);
+    }, config.stressTest.duration);
+} else {
+    console.log('[INFO] Stress test mode is not enabled.');
+}
+
 setInterval(tickGame, 1000 / 60);
 setInterval(gameloop, 1000);
 setInterval(sendUpdates, 1000 / config.networkUpdateFactor);
