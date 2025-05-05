@@ -244,10 +244,15 @@ const addSpectator = (socket) => {
 }
 
 const tickPlayer = (currentPlayer) => {
-    if (currentPlayer.lastHeartbeat < new Date().getTime() - config.maxHeartbeatInterval) {
-        sockets[currentPlayer.id].emit('kick', 'Last heartbeat received over ' + config.maxHeartbeatInterval + ' ago.');
-        sockets[currentPlayer.id].disconnect();
-    }
+    if (!currentPlayer.isBot) {
+        if (currentPlayer.lastHeartbeat < new Date().getTime() - config.maxHeartbeatInterval) {
+          if (sockets[currentPlayer.id]) {
+            sockets[currentPlayer.id].emit('kick', 'Last heartbeat received over ' + config.maxHeartbeatInterval + ' ago.');
+            sockets[currentPlayer.id].disconnect();
+          }
+          return;
+        }
+      }
 
     currentPlayer.move(config.slowBase, config.gameWidth, config.gameHeight, INIT_MASS_LOG);
 
@@ -296,7 +301,13 @@ const tickPlayer = (currentPlayer) => {
 };
 
 const tickGame = () => {
-    map.players.data.forEach(tickPlayer);
+    map.players.data.forEach(currentPlayer => {
+        if (currentPlayer.isBot) {
+          // Add logic to move bots
+          currentPlayer.target = generateRandomTarget(); // Example: Random movement
+        }
+        tickPlayer(currentPlayer); // Update player or bot
+    });
     map.massFood.move(config.gameWidth, config.gameHeight);
 
     map.players.handleCollisions(function (gotEaten, eater) {
@@ -314,6 +325,13 @@ const tickGame = () => {
     });
 
 };
+
+function generateRandomTarget() {
+    return {
+      x: Math.random() * config.gameWidth,
+      y: Math.random() * config.gameHeight
+    };
+}
 
 const calculateLeaderboard = () => {
     const topPlayers = map.players.getTopPlayers();
@@ -344,22 +362,25 @@ const gameloop = () => {
 const sendUpdates = () => {
     console.log("sendUpdates","spectators",spectators.length,"players",map.players.data.length)
     spectators.forEach(function (socketID) {
-      let player = spectatorPlayers[socketID]
-      map.doPlayerVisibility(player, function (playerData, visiblePlayers, visibleFood, visibleMass, visibleViruses) {
+    let player = spectatorPlayers[socketID]
+    map.doPlayerVisibility(player, function (playerData, visiblePlayers, visibleFood, visibleMass, visibleViruses) {
         sockets[socketID].emit('serverTellPlayerMove', playerData, visiblePlayers, visibleFood, visibleMass, visibleViruses);
 	if (leaderboardChanged) {
-	    sendLeaderboard(sockets[socketID])
+	sendLeaderboard(sockets[socketID])
 	}
-      })
+    })
     })
     map.enumerateWhatPlayersSee(function (playerData, visiblePlayers, visibleFood, visibleMass, visibleViruses) {
-        //console.log("sendUpdates player",playerData.id,playerData.name,"sees",visiblePlayers)
+        if (!sockets[playerData.id]) { // Skip entities without sockets
+        console.warn(`[WARN] Skipping update for entity without socket: ${playerData.id}`);
+        return;
+        }
         sockets[playerData.id].emit('serverTellPlayerMove', playerData, visiblePlayers, visibleFood, visibleMass, visibleViruses);
         if (leaderboardChanged) {
-            sendLeaderboard(sockets[playerData.id])
+        sendLeaderboard(sockets[playerData.id]);
         }
-    })
-    leaderboardChanged = false
+    });
+    leaderboardChanged = false;
 }
 
 const sendLeaderboard = (socket) => {
@@ -391,23 +412,30 @@ const updateSpectator = (socketID) => {
 if (config.stressTest.enabled) {
     console.log('[INFO] Stress test mode enabled. Spawning entities...');
     const stressTestStartTime = Date.now();
-
+    // Store references to stress test entities
+    const stressTestPlayers = [];
+    const stressTestFood = [];
     // Spawn entities
     for (let i = 0; i < config.stressTest.entityCount; i++) {
-        const position = util.randomPosition(10);
-        const mass = util.randomInRange(10, 50);
-        const newPlayer = new mapUtils.playerUtils.Player(`stressTest-${i}`);
-        newPlayer.init(position, mass);
-        map.players.pushNew(newPlayer);
-
-        const foodPosition = util.randomPosition(5);
-        map.food.addNew(1);
+    const position = util.randomPosition(10);
+    const mass = util.randomInRange(10, 50);
+    const newPlayer = new mapUtils.playerUtils.Player(`stressTest-${i}`);
+    newPlayer.init(position, mass);
+    map.players.pushNew(newPlayer);
+    stressTestPlayers.push(newPlayer);
+    const foodPosition = util.randomPosition(5);
+    const newFood = map.food.addNew(1);
+    stressTestFood.push(newFood);
     }
-
     // Stop the stress test after the configured duration
     setTimeout(() => {
-        const elapsedTime = Date.now() - stressTestStartTime;
-        console.log(`[INFO] Stress test completed in ${elapsedTime}ms. No crashes detected.`);
+    const elapsedTime = Date.now() - stressTestStartTime;
+      // Remove stress test entities
+    stressTestPlayers.forEach(player => {
+        map.players.removePlayerByID(player.id);
+    });
+
+    console.log(`[INFO] Stress test completed in ${elapsedTime}ms. Entities removed.`);
     }, config.stressTest.duration);
 } else {
     console.log('[INFO] Stress test mode is not enabled.');

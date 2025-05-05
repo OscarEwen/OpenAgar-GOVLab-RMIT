@@ -35,7 +35,7 @@ module.exports = {
       fileName: "db.sqlite3",
     },
     stressTest: {
-        enabled: false,
+        enabled: true,
         duration: 20000, // 20 seconds
         entityCount: 100
     }
