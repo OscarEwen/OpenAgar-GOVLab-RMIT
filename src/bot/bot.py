@@ -102,25 +102,34 @@ class Bot:
         largerEnemyInRange = False
         
         for player in self.visiblePlayers:
-            if player.get("id") != self.sio.sid:  # make sure to skip itself
+            if player.get("name") != self.name:  # make sure to skip itself
                 playerMass = player.get("massTotal", 0)
                 playerCells = player.get("cells", [])
                 playerPos = {"x": player.get("x", 0), "y": player.get("y", 0)}
                 distance = self.distance(self.position, playerPos) # find distance between itself and other player
 
                 smallerCellInRange = False
+                largerThanBotCells = False
 
-                if playerCells:
-                    for cell in playerCells:
-                        cellMass = cell.get("mass", 0)
-                        if cellMass * self.massAdvantageRatio < self.mass:
-                            smallerCellInRange = True
-                            break
-                
+                # check if any cell in any of the player's cells are smaller than the bot
+                for cell in playerCells:
+                    playerCellMass = cell.get("mass", 0)
+                    if playerCellMass * self.massAdvantageRatio < (self.mass / len(self.cells)):
+                        smallerCellInRange = True 
+                        break
+
+                for cell in self.cells:
+                    botCellMass = cell.get("mass", 0)
+                    print(self.name, "BOT CELL MASS", botCellMass)
+                    print(player.get("name"), "PLAYERMASS", playerMass * self.massAdvantageRatio)
+                    if playerMass * self.massAdvantageRatio > botCellMass:
+                        largerThanBotCells = True
+                        break
+
                 if (playerMass * self.massAdvantageRatio < self.mass or smallerCellInRange) and distance < self.attack_range:
-                    smallerEnemyInRange = True # if other player is smaller than itself, update to True
-                elif playerMass > self.mass * self.massAdvantageRatio and distance < self.flee_range:
-                    largerEnemyInRange = True # if other player is larger than itself, update to True
+                    smallerEnemyInRange = True # if other player is smaller than bot OR a cell in other player is smaller than bot, we want to chase them
+                elif (playerMass > self.mass * self.massAdvantageRatio or largerThanBotCells) and distance < self.flee_range:
+                    largerEnemyInRange = True # if other player is larger than bot, update to True
                 elif playerMass > self.mass * self.massAdvantageRatio and distance > self.stop_fleeing_range:
                     self.handleEvent(BotEvent.LargerEnemyOutOfRange) 
                     # if other player is larger and out of fleeing range, handle LargerEnemyOutOfRange event
@@ -263,6 +272,8 @@ class Bot:
                 self.timeDead = 0
             elif event == BotEvent.LargerEnemyOutOfRange:
                 self.setState(BotState.Eating)
+            elif event == BotEvent.SmallerEnemyInRange:
+                self.setState(BotState.Attack)
     
     # update states based on new state that is provided
     def setState(self, newState):
@@ -299,16 +310,15 @@ class Bot:
         minDistance = float('inf') # set min distance to infinity
         
         for player in self.visiblePlayers:
-            if player.get("id") != self.sio.sid:  # make sure to skip itself
+            if player.get("name") != self.name:  # make sure to skip itself
                 playerMass = player.get("massTotal", 0)
                 playerCells = player.get("cells", [])
-
                 smallerCellInRange = False
 
                 if playerCells:
                     for cell in playerCells:
                         cellMass = cell.get("mass", 0)
-                        if cellMass * self.massAdvantageRatio < self.mass:
+                        if cellMass * self.massAdvantageRatio < self.mass / (len(self.cells)):
                             smallerCellInRange = True
                             break
                             
@@ -327,9 +337,18 @@ class Bot:
         minDistance = float('inf') # set min distance to infnity
         
         for player in self.visiblePlayers:
-            if player.get("id") != self.sio.sid:  # make sure to skip itself
+            if player.get("name") != self.name:  # make sure to skip itself
                 playerMass = player.get("massTotal", 0)
-                if playerMass > self.mass * self.massAdvantageRatio:
+
+                largerThanBotCells = False
+
+                for cell in self.cells:
+                    botCellMass = cell.get("mass", 0)
+                    if playerMass * self.massAdvantageRatio > botCellMass:
+                        largerThanBotCells = True
+                        break
+        
+                if playerMass > self.mass * self.massAdvantageRatio or largerThanBotCells:
                     playerPos = {"x": player.get("x", 0), "y": player.get("y", 0)}
                     dist = self.distance(self.position, playerPos)
                     if dist < minDistance:
