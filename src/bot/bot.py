@@ -111,25 +111,25 @@ class Bot:
                 smallerCellInRange = False
                 largerThanBotCells = False
 
-                # check if any cell in any of the player's cells are smaller than the bot
+                # check if any of the player's cells are smaller than the bot
                 for cell in playerCells:
                     playerCellMass = cell.get("mass", 0)
                     if playerCellMass * self.massAdvantageRatio < (self.mass / len(self.cells)):
                         smallerCellInRange = True 
                         break
+                
+                # check if any of the bot's cells are smaller than other player
+                if smallerCellInRange == False:
+                    for cell in self.cells:
+                        botCellMass = cell.get("mass", 0)
+                        if playerMass * self.massAdvantageRatio > botCellMass:
+                            largerThanBotCells = True
+                            break
 
-                for cell in self.cells:
-                    botCellMass = cell.get("mass", 0)
-                    print(self.name, "BOT CELL MASS", botCellMass)
-                    print(player.get("name"), "PLAYERMASS", playerMass * self.massAdvantageRatio)
-                    if playerMass * self.massAdvantageRatio > botCellMass:
-                        largerThanBotCells = True
-                        break
-
-                if (playerMass * self.massAdvantageRatio < self.mass or smallerCellInRange) and distance < self.attack_range:
+                if largerThanBotCells == False and (playerMass * self.massAdvantageRatio < self.mass or smallerCellInRange) and distance < self.attack_range:
                     smallerEnemyInRange = True # if other player is smaller than bot OR a cell in other player is smaller than bot, we want to chase them
                 elif (playerMass > self.mass * self.massAdvantageRatio or largerThanBotCells) and distance < self.flee_range:
-                    largerEnemyInRange = True # if other player is larger than bot, update to True
+                    largerEnemyInRange = True # if other player is larger than bot OR player is larger than any of bot's cells, we want to flee
                 elif playerMass > self.mass * self.massAdvantageRatio and distance > self.stop_fleeing_range:
                     self.handleEvent(BotEvent.LargerEnemyOutOfRange) 
                     # if other player is larger and out of fleeing range, handle LargerEnemyOutOfRange event
@@ -315,6 +315,7 @@ class Bot:
                 playerCells = player.get("cells", [])
                 smallerCellInRange = False
 
+
                 if playerCells:
                     for cell in playerCells:
                         cellMass = cell.get("mass", 0)
@@ -342,12 +343,14 @@ class Bot:
 
                 largerThanBotCells = False
 
+                # check if any of the player's cells are smaller than the bot
                 for cell in self.cells:
                     botCellMass = cell.get("mass", 0)
                     if playerMass * self.massAdvantageRatio > botCellMass:
                         largerThanBotCells = True
                         break
         
+                # check if any of the bot's cells are smaller than other player
                 if playerMass > self.mass * self.massAdvantageRatio or largerThanBotCells:
                     playerPos = {"x": player.get("x", 0), "y": player.get("y", 0)}
                     dist = self.distance(self.position, playerPos)
