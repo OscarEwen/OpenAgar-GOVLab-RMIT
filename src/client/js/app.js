@@ -21,6 +21,10 @@ function startGame(type) {
     global.playerName = playerNameInput.value.replace(/(<([^>]+)>)/ig, '').substring(0, 25);
     global.playerType = type;
 
+    // Get selected skin/color
+    var skinSelector = document.getElementById('skinSelector');
+    global.playerSkin = skinSelector ? skinSelector.value : "#ff0000";
+
     global.screen.width = window.innerWidth;
     global.screen.height = window.innerHeight;
 
@@ -32,7 +36,8 @@ function startGame(type) {
     }
     if (!global.animLoopHandle)
         animloop();
-    socket.emit('respawn');
+    // Send skin/color as part of respawn
+    socket.emit('respawn', { skin: global.playerSkin });
     window.chat.socket = socket;
     window.chat.registerFunctions();
     window.canvas.socket = socket;
@@ -341,20 +346,21 @@ function gameLoop() {
 
         var cellsToDraw = [];
         for (var i = 0; i < users.length; i++) {
-            let color = 'hsl(' + users[i].hue + ', 100%, 50%)';
-            let borderColor = 'hsl(' + users[i].hue + ', 100%, 45%)';
-            for (var j = 0; j < users[i].cells.length; j++) {
-                cellsToDraw.push({
-                    color: color,
-                    borderColor: borderColor,
-                    mass: users[i].cells[j].mass,
-                    name: users[i].name,
-                    radius: users[i].cells[j].radius,
-                    x: users[i].cells[j].x - player.x + global.screen.width / 2,
-                    y: users[i].cells[j].y - player.y + global.screen.height / 2
-                });
-            }
-        }
+    // Use skin if present, otherwise fallback to hue
+    let color = users[i].skin ? users[i].skin : 'hsl(' + users[i].hue + ', 100%, 50%)';
+    let borderColor = users[i].skin ? users[i].skin : 'hsl(' + users[i].hue + ', 100%, 45%)';
+    for (var j = 0; j < users[i].cells.length; j++) {
+        cellsToDraw.push({
+            color: color,
+            borderColor: borderColor,
+            mass: users[i].cells[j].mass,
+            name: users[i].name,
+            radius: users[i].cells[j].radius,
+            x: users[i].cells[j].x - player.x + global.screen.width / 2,
+            y: users[i].cells[j].y - player.y + global.screen.height / 2
+        });
+    }
+}
         cellsToDraw.sort(function (obj1, obj2) {
             return obj1.mass - obj2.mass;
         });

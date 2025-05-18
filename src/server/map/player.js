@@ -86,6 +86,7 @@ exports.Player = class {
     constructor(id) {
         this.id = id;
         this.hue = Math.round(Math.random() * 360);
+        this.skin = "#ff0000";// Default skin/color
         this.name = null;
         this.admin = false;
         this.screenWidth = null;
@@ -106,10 +107,13 @@ exports.Player = class {
         };
     }
 
-    clientProvidedData(playerData) {
+     clientProvidedData(playerData) {
         this.name = playerData.name;
         this.screenWidth = playerData.screenWidth;
         this.screenHeight = playerData.screenHeight;
+        if (playerData.skin) {
+            this.skin = playerData.skin;
+        }
         this.setLastHeartbeat();
     }
 

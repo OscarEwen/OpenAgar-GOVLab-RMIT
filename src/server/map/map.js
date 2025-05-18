@@ -42,17 +42,18 @@ exports.Map = class {
 	var visibleViruses = this.viruses.data.filter(entity => isVisibleEntity(entity, currentPlayer));
 	var visibleMass = this.massFood.data.filter(entity => isVisibleEntity(entity, currentPlayer));
 	const extractData = (player) => {
-	    return {
-		x: player.x,
-		y: player.y,
-		cells: player.cells,
-		massTotal: Math.round(player.massTotal),
-		hue: player.hue,
-		id: player.id,
-		name: player.name,
-	        type: player.type
-	    };
-	}
+    return {
+        x: player.x,
+        y: player.y,
+        cells: player.cells,
+        massTotal: Math.round(player.massTotal),
+        hue: player.hue,
+        id: player.id,
+        name: player.name,
+        type: player.type,
+        skin: player.skin // Add this line
+    };
+}
 	var visiblePlayers = [];
 	for (let player of this.players.data) {
 	    for (let cell of player.cells) {
