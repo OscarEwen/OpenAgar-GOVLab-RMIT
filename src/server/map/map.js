@@ -51,7 +51,7 @@ exports.Map = class {
         id: player.id,
         name: player.name,
         type: player.type,
-        skin: player.skin // Add this line
+        skin: player.skin // skin is now an object {type, value}
     };
 }
 	var visiblePlayers = [];

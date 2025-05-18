@@ -23,7 +23,16 @@ function startGame(type) {
 
     // Get selected skin/color
     var skinSelector = document.getElementById('skinSelector');
-    global.playerSkin = skinSelector ? skinSelector.value : "#ff0000";
+    if (skinSelector) {
+        var skinValue = skinSelector.value;
+        if (skinValue.endsWith('.png')) {
+            global.playerSkin = { type: 'image', value: skinValue };
+        } else {
+            global.playerSkin = { type: 'color', value: skinValue };
+        }
+    } else {
+        global.playerSkin = { type: 'color', value: "#ff0000" };
+    }
 
     global.screen.width = window.innerWidth;
     global.screen.height = window.innerHeight;
@@ -251,6 +260,7 @@ function setupSocket(socket) {
             player.hue = playerData.hue;
             player.massTotal = playerData.massTotal;
             player.cells = playerData.cells;
+            player.skin = playerData.skin; // Store skin for self
         }
         users = userData;
         foods = foodsList;
@@ -347,8 +357,28 @@ function gameLoop() {
         var cellsToDraw = [];
         for (var i = 0; i < users.length; i++) {
     // Use skin if present, otherwise fallback to hue
-    let color = users[i].skin ? users[i].skin : 'hsl(' + users[i].hue + ', 100%, 50%)';
-    let borderColor = users[i].skin ? users[i].skin : 'hsl(' + users[i].hue + ', 100%, 45%)';
+    let skin = users[i].skin;
+    let color, borderColor, imageSkin = null;
+    if (skin && typeof skin === 'object') {
+        if (skin.type === 'image') {
+            imageSkin = skin.value;
+            color = "#ffffff";
+            borderColor = "#cccccc";
+        } else {
+            color = skin.value;
+            borderColor = skin.value;
+        }
+    } else if (skin && typeof skin === 'string' && skin.endsWith('.png')) {
+        imageSkin = skin;
+        color = "#ffffff";
+        borderColor = "#cccccc";
+    } else if (skin && typeof skin === 'string') {
+        color = skin;
+        borderColor = skin;
+    } else {
+        color = 'hsl(' + users[i].hue + ', 100%, 50%)';
+        borderColor = 'hsl(' + users[i].hue + ', 100%, 45%)';
+    }
     for (var j = 0; j < users[i].cells.length; j++) {
         cellsToDraw.push({
             color: color,
@@ -357,7 +387,8 @@ function gameLoop() {
             name: users[i].name,
             radius: users[i].cells[j].radius,
             x: users[i].cells[j].x - player.x + global.screen.width / 2,
-            y: users[i].cells[j].y - player.y + global.screen.height / 2
+            y: users[i].cells[j].y - player.y + global.screen.height / 2,
+            imageSkin: imageSkin
         });
     }
 }

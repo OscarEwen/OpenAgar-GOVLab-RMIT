@@ -8,6 +8,44 @@ const drawRoundObject = (position, radius, graph) => {
     graph.stroke();
 }
 
+// Draws a cell with an image skin if provided, otherwise as a colored circle
+const drawCellWithImage = (cell, playerConfig, borders, graph) => {
+    if (cell.imageSkin) {
+        let img = new window.Image();
+        img.src = "img/" + cell.imageSkin;
+        // Draw image as circle mask
+        graph.save();
+        graph.beginPath();
+        graph.arc(cell.x, cell.y, cell.radius, 0, FULL_ANGLE);
+        graph.closePath();
+        graph.clip();
+        img.onload = function () {
+            graph.drawImage(img, cell.x - cell.radius, cell.y - cell.radius, cell.radius * 2, cell.radius * 2);
+            graph.restore();
+        }
+        // If image is cached, draw immediately
+        if (img.complete) {
+            graph.drawImage(img, cell.x - cell.radius, cell.y - cell.radius, cell.radius * 2, cell.radius * 2);
+            graph.restore();
+        }
+        // Draw border
+        graph.save();
+        graph.beginPath();
+        graph.arc(cell.x, cell.y, cell.radius, 0, FULL_ANGLE);
+        graph.closePath();
+        graph.lineWidth = 6;
+        graph.strokeStyle = cell.borderColor;
+        graph.stroke();
+        graph.restore();
+    } else {
+        // Draw as normal colored cell
+        graph.fillStyle = cell.color;
+        graph.strokeStyle = cell.borderColor;
+        graph.lineWidth = 6;
+        drawRoundObject(cell, cell.radius, graph);
+    }
+}
+
 const drawFood = (position, food, graph) => {
     graph.fillStyle = 'hsl(' + food.hue + ', 100%, 50%)';
     graph.strokeStyle = 'hsl(' + food.hue + ', 100%, 45%)';
@@ -77,15 +115,17 @@ const drawCellWithLines = (cell, borders, graph) => {
 const drawCells = (cells, playerConfig, toggleMassState, borders, graph) => {
     for (let cell of cells) {
         // Draw the cell itself
-        graph.fillStyle = cell.color;
-        graph.strokeStyle = cell.borderColor;
-        graph.lineWidth = 6;
-        if (cellTouchingBorders(cell, borders)) {
-            // Asssemble the cell from lines
-            drawCellWithLines(cell, borders, graph);
+        if (cell.imageSkin) {
+            drawCellWithImage(cell, playerConfig, borders, graph);
         } else {
-            // Border corrections are not needed, the cell can be drawn as a circle
-            drawRoundObject(cell, cell.radius, graph);
+            graph.fillStyle = cell.color;
+            graph.strokeStyle = cell.borderColor;
+            graph.lineWidth = 6;
+            if (cellTouchingBorders(cell, borders)) {
+                drawCellWithLines(cell, borders, graph);
+            } else {
+                drawRoundObject(cell, cell.radius, graph);
+            }
         }
 
         // Draw the name of the player

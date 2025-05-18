@@ -86,7 +86,7 @@ exports.Player = class {
     constructor(id) {
         this.id = id;
         this.hue = Math.round(Math.random() * 360);
-        this.skin = "#ff0000";// Default skin/color
+        this.skin = { type: 'color', value: "#ff0000" };// Default skin/color
         this.name = null;
         this.admin = false;
         this.screenWidth = null;
