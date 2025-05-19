@@ -134,6 +134,12 @@ var leaderboard = [];
 var target = { x: player.x, y: player.y };
 global.target = target;
 
+// Attach arrays to global for testability
+global.users = users;
+global.foods = foods;
+global.fireFood = fireFood;
+global.viruses = viruses;
+
 window.canvas = new Canvas();
 window.chat = new ChatClient();
 
@@ -330,15 +336,15 @@ function gameLoop() {
         graph.fillRect(0, 0, global.screen.width, global.screen.height);
 
         render.drawGrid(global, player, global.screen, graph);
-        foods.forEach(food => {
+        global.foods.forEach(food => {
             let position = getPosition(food, player, global.screen);
             render.drawFood(position, food, graph);
         });
-        fireFood.forEach(fireFood => {
+        global.fireFood.forEach(fireFood => {
             let position = getPosition(fireFood, player, global.screen);
             render.drawFireFood(position, fireFood, playerConfig, graph);
         });
-        viruses.forEach(virus => {
+        global.viruses.forEach(virus => {
             let position = getPosition(virus, player, global.screen);
             render.drawVirus(position, virus, graph);
         });
@@ -355,49 +361,50 @@ function gameLoop() {
         }
 
         var cellsToDraw = [];
-        for (var i = 0; i < users.length; i++) {
-    // Use skin if present, otherwise fallback to hue
-    let skin = users[i].skin;
-    let color, borderColor, imageSkin = null;
-    if (skin && typeof skin === 'object') {
-        if (skin.type === 'image') {
-            imageSkin = skin.value;
-            color = "#ffffff";
-            borderColor = "#cccccc";
-        } else {
-            color = skin.value;
-            borderColor = skin.value;
+        for (var i = 0; i < global.users.length; i++) {
+            // Use skin if present, otherwise fallback to hue
+            let skin = global.users[i].skin;
+            let color, borderColor, imageSkin = null;
+            if (skin && typeof skin === 'object') {
+                if (skin.type === 'image') {
+                    imageSkin = skin.value;
+                    color = "#ffffff";
+                    borderColor = "#cccccc";
+                } else {
+                    color = skin.value;
+                    borderColor = skin.value;
+                }
+            } else if (skin && typeof skin === 'string' && skin.endsWith('.png')) {
+                imageSkin = skin;
+                color = "#ffffff";
+                borderColor = "#cccccc";
+            } else if (skin && typeof skin === 'string') {
+                color = skin;
+                borderColor = skin;
+            } else {
+                color = 'hsl(' + global.users[i].hue + ', 100%, 50%)';
+                borderColor = 'hsl(' + global.users[i].hue + ', 100%, 45%)';
+            }
+            for (var j = 0; j < global.users[i].cells.length; j++) {
+                cellsToDraw.push({
+                    color: color,
+                    borderColor: borderColor,
+                    mass: global.users[i].cells[j].mass,
+                    name: global.users[i].name,
+                    radius: global.users[i].cells[j].radius,
+                    x: global.users[i].cells[j].x - player.x + global.screen.width / 2,
+                    y: global.users[i].cells[j].y - player.y + global.screen.height / 2,
+                    imageSkin: imageSkin
+                });
+            }
         }
-    } else if (skin && typeof skin === 'string' && skin.endsWith('.png')) {
-        imageSkin = skin;
-        color = "#ffffff";
-        borderColor = "#cccccc";
-    } else if (skin && typeof skin === 'string') {
-        color = skin;
-        borderColor = skin;
-    } else {
-        color = 'hsl(' + users[i].hue + ', 100%, 50%)';
-        borderColor = 'hsl(' + users[i].hue + ', 100%, 45%)';
-    }
-    for (var j = 0; j < users[i].cells.length; j++) {
-        cellsToDraw.push({
-            color: color,
-            borderColor: borderColor,
-            mass: users[i].cells[j].mass,
-            name: users[i].name,
-            radius: users[i].cells[j].radius,
-            x: users[i].cells[j].x - player.x + global.screen.width / 2,
-            y: users[i].cells[j].y - player.y + global.screen.height / 2,
-            imageSkin: imageSkin
-        });
-    }
-}
         cellsToDraw.sort(function (obj1, obj2) {
             return obj1.mass - obj2.mass;
         });
         render.drawCells(cellsToDraw, playerConfig, global.toggleMassState, borders, graph);
 
-        socket.emit('0', window.canvas.target); // playerSendTarget "Heartbeat".
+        // Use global.socket if socket is undefined (for test compatibility)
+        (socket || global.socket).emit('0', window.canvas.target); // playerSendTarget "Heartbeat".
     }
 }
 
@@ -418,3 +425,6 @@ function resize() {
 
     socket.emit('windowResized', { screenWidth: global.screen.width, screenHeight: global.screen.height });
 }
+
+// Add this export for testability
+module.exports = { gameLoop };

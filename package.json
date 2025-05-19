@@ -41,7 +41,6 @@
     "gulp-nodemon": "^2.5.0",
     "gulp-todo": "^7.1.1",
     "jshint": "^2.13.6",
-    "mocha": "^10.2.0",
     "nodemon": "^3.0.1",
     "OpenAgar-GOVLab": "file:",
     "sat": "^0.9.0",
@@ -54,6 +53,9 @@
   },
   "devDependencies": {
     "@types/sat": "^0.0.32",
-    "plugin-error": "^2.0.1"
+    "jsdom": "^26.1.0",
+    "mocha": "^11.3.0",
+    "plugin-error": "^2.0.1",
+    "sinon": "^20.0.0"
   }
 }
