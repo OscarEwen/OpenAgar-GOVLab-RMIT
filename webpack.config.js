@@ -1,32 +1,23 @@
-module.exports = (isProduction) => ({
-    entry: "./src/client/js/app.js",
+import path from 'path';
+
+const __dirname = import.meta.dirname;
+
+export default (isProduction) => ({
+    entry: "./client/js/src/app.js",
     mode: isProduction ? 'production' : 'development',
     output: {
         library: "app",
-        filename: "app.js"
+        filename: "app.js",
+        path: path.resolve(__dirname, 'client/js')
     },
     devtool: false,
     module: {
-        rules: getRules(isProduction)
-    },
-});
-
-function getRules(isProduction) {
-    if (isProduction) {
-        return [
+        rules: [
             {
                 test: /\.(?:js|mjs|cjs)$/,
-                exclude: /node_modules/,
-                use: {
-                    loader: 'babel-loader',
-                    options: {
-                        presets: [
-                            ['@babel/preset-env', { targets: "defaults" }]
-                        ]
-                    }
-                }
+                // exclude: /node_modules/,
             }
         ]
-    }
-    return [];
-}
+    },
+    node: {global: true},
+});
