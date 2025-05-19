@@ -1,5 +1,5 @@
 NAME=agarioclone_agar
 ./build-docker
 docker rm -f $NAME
-docker run -d -p 3000:3001 --name $NAME $NAME
+docker run -d -p 3000:3000 --name $NAME $NAME
 docker logs -f $NAME

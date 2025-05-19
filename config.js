@@ -1,35 +1,37 @@
-export const host = "0.0.0.0";
-export const port = 3000;
-export const logpath = "logger.php";
-export const foodMass = 1;
-export const fireFood = 20;
-export const limitSplit = 16;
-export const defaultPlayerMass = 10;
-export const virus = {
-    fill: "#33ff33",
-    stroke: "#19D119",
-    strokeWidth: 20,
-    defaultMass: {
-        from: 100,
-        to: 150
-    },
-    splitMass: 180,
-    uniformDisposition: false,
-};
-export const gameWidth = 13440;
-export const gameHeight = 3240;
-export const adminPass = "DEFAULT";
-export const gameMass = 20000;
-export const maxFood = 1000;
-export const maxVirus = 50;
-export const slowBase = 4.5;
-export const logChat = 0;
-export const networkUpdateFactor = 40;
-export const maxHeartbeatInterval = 5000;
-export const foodUniformDisposition = true;
-export const newPlayerInitialPosition = "farthest";
-export const massLossRate = 1;
-export const minMassLoss = 50;
-export const sqlinfo = {
-    fileName: "db.sqlite3",
+module.exports = {
+    host: "0.0.0.0",
+    port: 3000,
+    logpath: "logger.php",
+    foodMass: 1,
+    fireFood: 20,
+    limitSplit: 16,
+    defaultPlayerMass: 10,
+	virus: {
+        fill: "#33ff33",
+        stroke: "#19D119",
+        strokeWidth: 20,
+        defaultMass: {
+            from: 100,
+            to: 150
+        },
+        splitMass: 180,
+        uniformDisposition: false,
+	},
+    gameWidth: 13440,
+    gameHeight: 3240,
+    adminPass: "DEFAULT",
+    gameMass: 20000,
+    maxFood: 1000,
+    maxVirus: 50,
+    slowBase: 4.5,
+    logChat: 0,
+    networkUpdateFactor: 40,
+    maxHeartbeatInterval: 5000,
+    foodUniformDisposition: true,
+    newPlayerInitialPosition: "farthest",
+    massLossRate: 1,
+    minMassLoss: 50,
+    sqlinfo: {
+      fileName: "db.sqlite3",
+    }
 };
