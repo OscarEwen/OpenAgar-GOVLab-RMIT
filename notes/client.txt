@@ -1,0 +1,120 @@
+Player class:
+    id: -1
+    x: config.screen.width / 2
+    y: config.screen.height / 2
+    screenWidth: config.screen.width
+    screenHeight: config.screen.height
+    target: {
+        x: config.screen.width / 2,
+        y: config.screen.height / 2
+    }
+
+lists: foods, viruses, fireFood, users, leaderboard
+obj target: {
+    x: player.x,
+    y: player,y
+}
+
+Connections:
+    Outgoing:
+        socket.emit 0: heartbeat {
+            'target' -> { 
+                x: num, 
+                y : num
+            }
+        } 
+        socket.emit 1: feed / fire food
+        socket.emit 2: split
+        socket.emit `respawn`: respawn
+        socket.emit 'windowResized': change visible area {
+            `data` -> { 
+                screenWidth, 
+                screenHeight 
+            }
+        }
+        socket.emit `gotit` : confirm connection with player obj {
+            `player` -> {
+                id,
+                x,
+                y,
+                screenWidth,
+                screenWidth,
+                target -> {
+                    x,
+                    y
+                }
+            }
+        }
+        socket.emit 'pingcheck': check ping
+        socket.emit 'pass': attempt a login {
+            `args` : list of args, first element is the password
+        }
+        socket.emit 'kick' : attempt to kick a player {
+            `args` : list of args, first argument is the player to kick
+        }
+        socket.emit `playerChat` : send a message {
+            unnamed object -> {
+                sender,
+                message
+            }
+        }
+
+    Incomming:
+        socket.on 'connection_error': connection error occured, exit {
+            err: connection error object -> {
+                message
+                description
+                context
+            }
+        }
+        socket.on 'pingcheck' : check ping, has no contents
+        socket.on 'welcome' : handle connection -> {
+            `playerSettings` : player obj from server
+            `gameSizes` game width and heigh from server -> {
+                width,
+                height
+            }
+        }
+        socket.on 'playerDied' : indicate a player has died -> {
+            data : data on what player died -> {
+                name
+            }
+        }
+        socket.on `playerDisconnect` : indicate a player has been disconnected -> {
+            data : data on what player disconnected -> {
+                name
+            }
+        }
+        socket.on `playerJoin` : indicate a player has joined -> {
+            data : data on what player joing -> {
+                name
+            }
+        }
+        socket.on 'leaderboard' : leaderboard update -> {
+            data : leaderboard data -> {
+                leaderboard : list of players on the leader board
+                leaderboard[i] -> {
+                    name
+                }
+            }
+        }
+        socket.on 'serverSendPlayerChat' : chat update -> {
+            data -> {
+                sender,
+                message
+            }
+        }
+        socket.on 'serverTellPlayerMove' : update player movement -> {
+            playerData,
+            userData,
+            foodsList,
+            massList,
+            virusList
+        }
+        socket.on 'RIP' : self player died, no arguments
+        socket.on 'kick' : self player kicked -> {
+            reason : string reason
+        }
+        
+
+

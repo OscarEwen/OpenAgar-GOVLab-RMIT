@@ -1,0 +1,76 @@
+`express` imported from express library
+`createServer` imported from http library
+`Server` imported from socket.io library
+`SAT` imported from sat library
+
+`loggingRepoistry` class imported from file `./repositories/logging-repository.js`
+`chatRepository` class imported from file `./repositories/chat-repository.js`
+all classes from `../config.js` imported as `config`
+all classes from `./lib/util.js` imported as `util`
+all classes from `./map/map.js` imported as `mapUtils`
+all classes from `./lib/entityUtils.js` imported as `entityUtils`
+
+constant `__dirname` created to store the directory of the js file.
+
+Create `express` object `app`
+
+Run express method `get` on `app`, send `index.html` file to client when connecting on empty `/` connection.
+
+Create `map` object `map` from `mapUtils`, with `config` as the argument.
+Create empty object `sockets`
+Create empty list `spectators`
+Create empty object `spectatorPlayers`
+
+Create integer primitive `spectatorNum` which stores the length of list `spectators`
+Create integer primitive `prevSpectatorNum` which stores the previous length of list `spectators`, initialised as null.
+
+Create integer primitive `playerNum` which stores the length of list `players.data`, stored in `map` object.
+Create integer primitive `prevPlayerNum` which stores the previous length of list `players.data`, initialised as null.
+
+Creat constant to store the initial logarithm of the mass, using `util` method `mathLog` with arguments `defaultPlayerMass` and `slowBase` from `config`.
+
+Create empty list `leaderboard`
+Create boolean `leaderboardChanged` set to `false`
+
+Create constant `vector` obj from `sat` called `vector`
+
+Create constant `createServer` obj with argument `app` called `httpServer`
+
+Create `Server` obj `io` with arguments `httpServer` and an empty object.
+
+run method `on` on property `engine` of object `io` to create a log on a connection error.
+
+Run method `use` on obj `app` to setup directories of static files for client.
+
+Run method `on` on obj `io`, with the arguments of the static string `connection` and an unnamed function object which passes a parameter `socket`, function has behaviour:
+    Create obj `type` set equal to `socket.handshake.query.type`
+    Log `user has connected` with type of connection (player / spectator)
+    Add an object of the specified type using the relevant method and the socket connection: `addPlayer` or    
+    `addSpectator`
+    If the type is unknown, do nothing and log failure
+
+Create function `generateSpawnpoint` with no parameters:
+    Create obj `radius` which stores the result of the method `massToRadius` of obj `util` with argument `defaultPlayerMass` from obj `config`.
+    Return result of method `getPosition` of obj `entityUtils` with arguments: 
+        (boolean of result of exact equivalence between literal `farthest` and property `newPlayerInitialPosition` of obj `config`), 
+        `radius` obj, 
+        `data` property of `players` property` of obj `map`.
+
+Create constant arrow function with `socket` parameter:
+    Create `currentPlayer` obj set to a newly created `Player` parameter, with argument `id` which is a property of `socket`, which is a property of `playerUtils` which itself is a property of `mapUtils`.
+    Run method `on` of obj `socket` with arguments of the literal `gotit` and an arrow function with the parameter `clientPlayerData`:
+        log player connecting.
+        run method `init` on obj `currentPlayer` with arguments `generateSpawnpoint()` and `defaultPlayerMass` of obj `config`
+
+Player class:
+    Properties:
+        id
+        hue
+        name
+        admin
+        screenWidth
+        screenHeight
+        timeToMerge
+    Methods:
+        init(position, defaultPlayerMass):
+            set cells property to a list with a singular newly created cell with `x` of `position`, `y` of `position`, `defaultPlayerMass`, and `MIN_SPEED` as arguments. 
