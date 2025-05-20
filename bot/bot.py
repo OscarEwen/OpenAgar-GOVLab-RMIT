@@ -8,7 +8,7 @@ import threading
 GAME_WIDTH = 5000 
 GAME_HEIGHT = 5000  
 
-SERVER_URL = "http://localhost:3000"
+SERVER_URL = "http://localhost:3001"
 SCREEN_WIDTH = 1920
 SCREEN_HEIGHT = 1080
 

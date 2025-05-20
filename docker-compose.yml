@@ -1,6 +1,11 @@
 version: "2"
 services:
     agar:
+        image: node:23-alpine
         build: .
         ports:
-            - 3000:3001
+            - 3001:3001
+    bot:
+        depends_on:
+            - agar
+        image: python:3

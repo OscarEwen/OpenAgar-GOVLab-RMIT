@@ -1,5 +1,5 @@
 export const host = "0.0.0.0";
-export const port = 3000;
+export const port = 3001;
 export const logpath = "logger.php";
 export const foodMass = 1;
 export const fireFood = 20;

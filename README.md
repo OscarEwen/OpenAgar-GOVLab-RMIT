@@ -75,7 +75,7 @@ The game will then be accessible at `http://localhost:3000`. The default port is
 
 
 ### Running the Server with Docker
-If you have [Docker](https://www.docker.com/) installed, after cloning the repository you can run the following commands to start the server and make it acessible at `http://localhost:3000`:
+If you have [Docker](https://www.docker.com/) installed, after cloning the repository you can run the following commands to start the server and make it acessible at `http://localhost:3001`:
 
 ```
 docker build -t agarioclone_agar .

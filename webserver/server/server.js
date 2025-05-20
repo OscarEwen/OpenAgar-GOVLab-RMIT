@@ -440,7 +440,7 @@ var ipaddress = process.env.OPENSHIFT_NODEJS_IP || process.env.IP || config.host
 var serverport = process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || config.port;
 httpServer.listen(serverport, ipaddress, () => console.log('[DEBUG] Listening on ' + ipaddress + ':' + serverport));  
 
-// function to spawn bots
+/*/ function to spawn bots
 
 function spawnRandyBots(amount) {
 
@@ -473,4 +473,4 @@ function spawnRandyBots(amount) {
 }
 
 // spawn however many bots you want
-spawnRandyBots(10);
+spawnRandyBots(10);*/
