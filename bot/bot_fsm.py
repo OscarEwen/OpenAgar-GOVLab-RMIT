@@ -130,7 +130,7 @@ class Bot:
         # initialize destination
         desiredTarget = {"x": 0, "y": 0}
         
-        # TO FIX
+        # TODO: Fix
         if self.state == BotState.Dead:
             # when dead, don't move
             desiredTarget = self.position.copy()
@@ -141,7 +141,7 @@ class Bot:
                 self.handleEvent(BotEvent.RespawnTimeElapsed)
                 # once time dead has surpassed respawn time, handle RespawnTimeElapsed event
         
-        # TO FIX
+        # TODO: Fix
         elif self.state == BotState.Respawn:
             self.respawn()
             desiredTarget = self.position.copy()
