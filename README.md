@@ -71,15 +71,15 @@ After downloading all the dependencies, you can run the server with the followin
 npm start
 ```
 
-The game will then be accessible at `http://localhost:3000`. The default port is `3000`, however this can be changed in config. Further elaboration is available on the wiki when setup.
+The game will then be accessible at `http://localhost:3001`. The default port is `3001`, however this can be changed in config. Further elaboration is available on the wiki when setup.
 
 
 ### Running the Server with Docker
-If you have [Docker](https://www.docker.com/) installed, after cloning the repository you can run the following commands to start the server and make it acessible at `http://localhost:3000`:
+If you have [Docker](https://www.docker.com/) installed, after cloning the repository you can run the following commands to start the server and make it acessible at `http://localhost:3001`:
 
 ```
 docker build -t agarioclone_agar .
-docker run -it -p 3000:3000 agarioclone_agar
+docker run -it -p 3001:3001 agarioclone_agar
 ```
 
 ---
