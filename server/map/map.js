@@ -44,11 +44,11 @@ const Map = class {
     doPlayerVisibility(currentPlayer,callback) {
         //console.log("doPlayerVisibility",currentPlayer.id,currentPlayer.name,currentPlayer);
         
-        var visibleFood = this.food.data.filter(entity => entityUtils.isVisibleEntity(entity, currentPlayer, false));
+        let visibleFood = this.food.data.filter(entity => entityUtils.isVisibleEntity(entity, currentPlayer, false));
 
-        var visibleViruses = this.viruses.data.filter(entity => entityUtils.isVisibleEntity(entity, currentPlayer));
+        let visibleViruses = this.viruses.data.filter(entity => entityUtils.isVisibleEntity(entity, currentPlayer));
 
-        var visibleMass = this.massFood.data.filter(entity => entityUtils.isVisibleEntity(entity, currentPlayer));
+        let visibleMass = this.massFood.data.filter(entity => entityUtils.isVisibleEntity(entity, currentPlayer));
 
         const extractData = (player) => {
             return {
@@ -62,7 +62,7 @@ const Map = class {
                 type: player.type
             };
         }
-        var visiblePlayers = [];
+        let visiblePlayers = [];
         for (let player of this.players.data) {
             for (let cell of player.cells) {
             if (entityUtils.isVisibleEntity(cell, currentPlayer)) {

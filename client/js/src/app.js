@@ -122,7 +122,10 @@ let player = {
     y: config.screen.height / 2,
     screenWidth: config.screen.width,
     screenHeight: config.screen.height,
-    target: { x: config.screen.width / 2, y: config.screen.height / 2 }
+    target: { 
+        x: config.screen.width / 2, 
+        y: config.screen.height / 2 
+    }
 };
 
 config.player = player;
@@ -132,7 +135,10 @@ let viruses = [];
 let fireFood = [];
 let users = [];
 let leaderboard = [];
-let target = { x: player.x, y: player.y };
+let target = { 
+    x: player.x, 
+    y: player.y 
+};
 config.target = target;
 
 window.canvas = new Canvas();
@@ -173,7 +179,7 @@ function handleDisconnect() {
 // socket stuff.
 function setupSocket(socket) {
     // Handle ping.
-    socket.on('pongcheck', () => {
+    socket.on('pingcheck', () => {
         let latency = Date.now() - config.startPingTime;
         debug('Latency: ' + latency + 'ms');
         window.chat.addSystemLine('Ping: ' + latency + 'ms');
@@ -223,8 +229,8 @@ function setupSocket(socket) {
 
     socket.on('leaderboard', (data) => {
         leaderboard = data.leaderboard;
-        var status = '<span class="title">Leaderboard</span>';
-        for (var i = 0; i < leaderboard.length; i++) {
+        let status = '<span class="title">Leaderboard</span>';
+        for (let i = 0; i < leaderboard.length; i++) {
             status += '<br />';
             if (leaderboard[i].id == player.id) {
                 if (leaderboard[i].name.length !== 0)
@@ -379,6 +385,12 @@ function resize() {
         player.y = config.game.height / 2;
     }
 
-    socket.emit('windowResized', { screenWidth: config.screen.width, screenHeight: config.screen.height });
+    socket.emit(
+        'windowResized', 
+        { 
+            screenWidth: config.screen.width, 
+            screenHeight: config.screen.height 
+        }
+    );
 }
 

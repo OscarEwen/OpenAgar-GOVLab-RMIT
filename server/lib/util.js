@@ -9,15 +9,15 @@ const validNick = function (nickname) {
 export {validNick};
 
 // determine mass from radius of circle
-const massToRadius = function (mass) {
+const massToRadius = (mass) => {
     return 4 + Math.sqrt(mass) * 6;
 };
 
 export {massToRadius};
 
 // overwrite Math.log function
-const mathLog = (function () {
-    var log = Math.log;
+const mathLog = (() => {
+    let log = Math.log;
     return function (n, base) {
         return log(n) / (base ? log(base) : 1);
     };
@@ -26,20 +26,20 @@ const mathLog = (function () {
 export {mathLog};
 
 // get the Euclidean distance between the edges of two shapes
-const getDistance = function (p1, p2) {
+const getDistance = (p1, p2) => {
     return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2)) - p1.radius - p2.radius;
 };
 
 export {getDistance};
 
-const randomInRange = function (from, to) {
+const randomInRange = (from, to) => {
     return Math.floor(Math.random() * (to - from)) + from;
 };
 
 export {randomInRange};
 
 // generate a random position within the field of play
-const randomPosition = function (radius) {
+const randomPosition = (radius) => {
     return {
         x: randomInRange(radius, cfg.gameWidth - radius),
         y: randomInRange(radius, cfg.gameHeight - radius)
@@ -48,7 +48,7 @@ const randomPosition = function (radius) {
 
 export {randomPosition};
 
-const uniformPosition = function (points, radius) {
+const uniformPosition = (points, radius) => {
     let bestCandidate, maxDistance = 0;
     let numberOfCandidates = 10;
 
@@ -83,7 +83,7 @@ const uniformPosition = function (points, radius) {
 
 export {uniformPosition};
 
-const findIndex = function (arr, id) {
+const findIndex = (arr, id) => {
     let len = arr.length;
 
     while (len--) {
@@ -97,7 +97,7 @@ const findIndex = function (arr, id) {
 
 export {findIndex};
 
-const randomColor = function () {
+const randomColor = () => {
     let color = '#' + ('00000' + (Math.random() * (1 << 24) | 0).toString(16)).slice(-6);
     let c = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(color);
     let r = (parseInt(c[1], 16) - 32) > 0 ? (parseInt(c[1], 16) - 32) : 0;
@@ -112,7 +112,7 @@ const randomColor = function () {
 
 export {randomColor};
 
-const removeNulls = function (inputArray) {
+const removeNulls = (inputArray) => {
     let result = [];
     for (let element of inputArray) {
         if (element != null) {
@@ -127,7 +127,7 @@ export {removeNulls};
 
 // Removes elements from `inputArray` whose indexes are in the `indexes` array.
 // Leaves the original array unchanged, and returns the result.
-const removeIndexes = function (inputArray, indexes) {
+const removeIndexes = (inputArray, indexes) => {
     let nullified = inputArray;
     for (let index of indexes) {
         nullified[index] = null;
@@ -141,7 +141,7 @@ export {removeIndexes};
 // Checks if the two rectangles are colliding
 // width and height is for half values (WTF??)
 const testRectangleRectangle =
-    function (centerXA, centerYA, widthA, heightA, centerXB, centerYB, widthB, heightB) {
+    (centerXA, centerYA, widthA, heightA, centerXB, centerYB, widthB, heightB) => {
         return centerXA + widthA > centerXB - widthB
             && centerXA - widthA < centerXB + widthB
             && centerYA + heightA > centerYB - heightB
@@ -153,7 +153,7 @@ export {testRectangleRectangle};
 // Checks if the square (first 3 arguments) and the rectangle (last 4 arguments) are colliding
 // length, width and height is for half values (WTF??)
 const testSquareRectangle =
-    function (centerXA, centerYA, edgeLengthA, centerXB, centerYB, widthB, heightB) {
+    (centerXA, centerYA, edgeLengthA, centerXB, centerYB, widthB, heightB) => {
         return testRectangleRectangle(
             centerXA, centerYA, edgeLengthA, edgeLengthA,
             centerXB, centerYB, widthB, heightB);

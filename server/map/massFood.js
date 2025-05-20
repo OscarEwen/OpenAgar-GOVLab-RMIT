@@ -20,8 +20,8 @@ const MassFood = class {
     }
 
     move(gameWidth, gameHeight) {
-        var deltaX = this.speed * this.direction.x;
-        var deltaY = this.speed * this.direction.y;
+        let deltaX = this.speed * this.direction.x;
+        let deltaY = this.speed * this.direction.y;
 
         this.speed -= 0.5;
         if (this.speed < 0) {

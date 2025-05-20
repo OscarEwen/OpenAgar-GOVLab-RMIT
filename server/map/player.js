@@ -9,6 +9,7 @@ const MIN_DISTANCE = 50;
 const PUSHING_AWAY_SPEED = 1.1;
 const MERGE_TIMER = 15;
 
+// Class for individual cells of players
 class Cell {
     constructor(x, y, mass, speed) {
         this.x = x;
@@ -36,19 +37,19 @@ class Cell {
     }
 
     move(playerX, playerY, playerTarget, slowBase, initMassLog) {
-        var target = {
+        let target = {
             x: playerX - this.x + playerTarget.x,
             y: playerY - this.y + playerTarget.y
         };
-        var dist = Math.hypot(target.y, target.x)
-        var deg = Math.atan2(target.y, target.x);
-        var slowDown = 1;
+        let dist = Math.hypot(target.y, target.x)
+        let deg = Math.atan2(target.y, target.x);
+        let slowDown = 1;
         if (this.speed <= MIN_SPEED) {
             slowDown = util.mathLog(this.mass, slowBase) - initMassLog + 1;
         }
 
-        var deltaY = this.speed * Math.sin(deg) / slowDown;
-        var deltaX = this.speed * Math.cos(deg) / slowDown;
+        let deltaY = this.speed * Math.sin(deg) / slowDown;
+        let deltaX = this.speed * Math.cos(deg) / slowDown;
 
         if (this.speed > MIN_SPEED) {
             this.speed -= SPEED_DECREMENT;
@@ -80,6 +81,7 @@ class Cell {
     }
 }
 
+// Class representing a player entity
 const Player = class {
     constructor(id) {
         this.id = id;
@@ -104,6 +106,7 @@ const Player = class {
         };
     }
 
+    // Uses player provided data to set the name, screen dimensions, and the last heartbeat
     clientProvidedData(playerData) {
         this.name = playerData.name;
         this.screenWidth = playerData.screenWidth;
@@ -111,10 +114,12 @@ const Player = class {
         this.setLastHeartbeat();
     }
 
+    // Set last heartbeat time to current time
     setLastHeartbeat() {
         this.lastHeartbeat = Date.now();
     }
 
+    // Set last split time to current time
     setLastSplit() {
         this.timeToMerge = Date.now() + 1000 * MERGE_TIMER;
     }
@@ -122,7 +127,7 @@ const Player = class {
     loseMassIfNeeded(massLossRate, defaultPlayerMass, minMassLoss) {
         for (let i in this.cells) {
             if (this.cells[i].mass * (1 - (massLossRate / 1000)) > defaultPlayerMass && this.massTotal > minMassLoss) {
-                var massLoss = this.cells[i].mass * (massLossRate / 1000);
+                let massLoss = this.cells[i].mass * (massLossRate / 1000);
                 this.changeCellMass(i, -massLoss);
             }
         }
@@ -207,7 +212,7 @@ const Player = class {
     }
 
     mergeCollidingCells() {
-        this.enumerateCollidingCells(function (cells, cellAIndex, cellBIndex) {
+        this.enumerateCollidingCells((cells, cellAIndex, cellBIndex) => {
             cells[cellAIndex].addMass(cells[cellBIndex].mass);
             cells[cellBIndex] = null;
         });
@@ -330,9 +335,9 @@ const PlayerManager = class {
     }
 
     getTopPlayers() {
-        this.data.sort(function (a, b) { return b.massTotal - a.massTotal; });
-        var topPlayers = [];
-        for (var i = 0; i < Math.min(10, this.data.length); i++) {
+        this.data.sort((a, b) => { return b.massTotal - a.massTotal; });
+        let topPlayers = [];
+        for (let i = 0; i < Math.min(10, this.data.length); i++) {
             topPlayers.push({
                 id: this.data[i].id,
                 name: this.data[i].name

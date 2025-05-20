@@ -10,7 +10,7 @@ class ChatClient {
         this.commands = {};
         var input = document.getElementById('chatInput');
         input.addEventListener('keyup', this.sendChat.bind(this));
-        input.addEventListener('keyup', function(key) {
+        input.addEventListener('keyup', (key) => {
             input = document.getElementById('chatInput');
             key = key.key; //.which || key.keyCode;
             if (key === config.KEY_ESC) {
@@ -25,27 +25,27 @@ class ChatClient {
 
     registerFunctions() {
         var self = this;
-        this.registerCommand('ping', 'Check your latency.', function () {
+        this.registerCommand('ping', 'Check your latency.', () => {
             self.checkLatency();
         });
 
-        this.registerCommand('dark', 'Toggle dark mode.', function () {
+        this.registerCommand('dark', 'Toggle dark mode.', () => {
             self.toggleDarkMode();
         });
 
-        this.registerCommand('border', 'Toggle visibility of border.', function () {
+        this.registerCommand('border', 'Toggle visibility of border.', () => {
             self.toggleBorder();
         });
 
-        this.registerCommand('mass', 'Toggle visibility of mass.', function () {
+        this.registerCommand('mass', 'Toggle visibility of mass.', () => {
             self.toggleMass();
         });
 
-        this.registerCommand('continuity', 'Toggle continuity.', function () {
+        this.registerCommand('continuity', 'Toggle continuity.', () => {
             self.toggleContinuity();
         });
 
-        this.registerCommand('roundfood', 'Toggle food drawing.', function (args) {
+        this.registerCommand('roundfood', 'Toggle food drawing.', (args) => {
             self.toggleRoundFood(args);
         });
 
@@ -53,11 +53,11 @@ class ChatClient {
             self.printHelp();
         });
 
-        this.registerCommand('login', 'Login as an admin.', function (args) {
+        this.registerCommand('login', 'Login as an admin.', (args) => {
             self.socket.emit('pass', args);
         });
 
-        this.registerCommand('kick', 'Kick a player, for admins only.', function (args) {
+        this.registerCommand('kick', 'Kick a player, for admins only.', (args) => {
             self.socket.emit('kick', args);
         });
         config.chatClient = this;
