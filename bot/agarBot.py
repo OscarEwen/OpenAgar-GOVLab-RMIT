@@ -105,6 +105,7 @@ class agarBot(ABC):
     
     @abstractmethod
     def onSendHeartbeat(self):
+        """Method to be overriden, called once before each heartbeat sent"""
         pass
 
     
