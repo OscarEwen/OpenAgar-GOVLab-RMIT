@@ -7,9 +7,14 @@ export const KEY_LEFT = 'ArrowLeft';
 export const KEY_UP = 'ArrowUp';
 export const KEY_RIGHT = 'ArrowRight';
 export const KEY_DOWN = 'ArrowDown';
+export const LIGHT = '#f2fbff';
+export const DARK = '#181818';
+export const LINELIGHT = '#000000';
+export const LINEDARK = '#ffffff';
+export let borderDraw = false;
 export let canvas;
 export let chatClient;
-export let borderDraw = false;
+export let darkMode;
 export let mobile = false;
 export let screen = {
     width: window.innerWidth,
@@ -33,4 +38,3 @@ export let playerType;
 export let animLoopHandle;
 export let socket;
 export let target;
-export let foodSides;
