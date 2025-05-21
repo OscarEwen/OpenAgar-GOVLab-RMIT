@@ -1,13 +1,17 @@
 {
-  "name": "OpenAgar-GOVLab",
+  "name": "open-agar-govlab",
   "version": "1.0.0",
   "description": "OpenAgar clone written with Socket.IO and HTML5 canvas modified for use with the GOVLab at RMIT, utilising the GOVLabs 14400x3240 display to show the entire playing field in real-time",
   "main": "server/server.js",
+  "type": "module",
   "scripts": {
-    "build": "gulp build",
-    "start": "gulp run",
-    "watch": "gulp watch",
-    "test": "gulp test"
+    "build": "npm run lint && concurrently \"npm run build:client\" \"node --test\"",
+    "build:client": "webpack",
+    "start": "npm run build && node ./server/server.js",
+    "watch": "concurrently \"webpack --watch\" \"nodemon ./server/server.js\"",
+    "test": "npm run lint && node --test",
+    "dev": "concurrently \"npm run build:client\" \"npm run build:server\"",
+    "lint": "eslint ."
   },
   "repository": {
     "type": "git",
@@ -27,35 +31,25 @@
     "Mark Mezentseff <S3898294@student.rmit.edu.au> (https://github.com/MarkMez1)"
   ],
   "dependencies": {
-    "@babel/core": "^7.21.8",
-    "@babel/eslint-parser": "^7.21.8",
-    "@babel/preset-env": "^7.21.5",
-    "babel-loader": "^9.1.2",
-    "chai": "^4.3.7",
-    "eslint": "^8.40.0",
-    "eslint-plugin-import": "^2.27.5",
-    "express": "^4.18.2",
-    "gulp": "^4.0.2",
-    "gulp-babel": "^8.0.0",
-    "gulp-eslint": "^6.0.0",
-    "gulp-nodemon": "^2.5.0",
-    "gulp-todo": "^7.1.1",
-    "jshint": "^2.13.6",
-    "nodemon": "^3.0.1",
-    "OpenAgar-GOVLab": "file:",
+    "better-sqlite3": "^11.9.1",
+    "build": "^0.1.4",
+    "express": "^5.1.0",
+    "open-agar-govlab": "file:",
     "sat": "^0.9.0",
-    "socket.io": "^4.6.1",
-    "socket.io-client": "^4.6.1",
-    "sqlite3": "^5.1.6",
-    "uuid": "^9.0.0",
-    "webpack": "^5.82.1",
-    "webpack-stream": "^7.0.0"
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
+    "uuid": "^11.1.0",
+    "webpack": "^5.99.5"
   },
   "devDependencies": {
-    "@types/sat": "^0.0.32",
-    "jsdom": "^26.1.0",
-    "mocha": "^11.3.0",
+    "@types/sat": "^0.0.35",
+    "ajv": "^7.2.4",
+    "concurrently": "^9.1.2",
+    "eslint": "^9.24.0",
+    "eslint-plugin-import": "^2.31.0",
+    "globals": "^16.0.0",
+    "nodemon": "^3.1.10",
     "plugin-error": "^2.0.1",
-    "sinon": "^20.0.0"
+    "webpack-cli": "^6.0.1"
   }
 }
