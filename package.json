@@ -32,7 +32,6 @@
   ],
   "dependencies": {
     "better-sqlite3": "^11.9.1",
-    "build": "^0.1.4",
     "express": "^5.1.0",
     "open-agar-govlab": "file:",
     "sat": "^0.9.0",
