@@ -31,6 +31,7 @@
     "Mark Mezentseff <S3898294@student.rmit.edu.au> (https://github.com/MarkMez1)"
   ],
   "dependencies": {
+    "@dotenvx/dotenvx": "^1.44.1",
     "better-sqlite3": "^11.9.1",
     "express": "^5.1.0",
     "sat": "^0.9.0",

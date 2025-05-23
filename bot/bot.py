@@ -1,14 +1,15 @@
-import socketio
-import random
-import time
-import math
 import enum
+import math
+import os
+import random
+import socketio
 import threading
+import time
 
 GAME_WIDTH = 5000 
 GAME_HEIGHT = 5000  
 
-SERVER_URL = "http://localhost:3001"
+SERVER_URL = os.environ.get("SERVER_URL", "http://localhost:3001")
 SCREEN_WIDTH = 1920
 SCREEN_HEIGHT = 1080
 

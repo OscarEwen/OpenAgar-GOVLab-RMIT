@@ -1,0 +1,21 @@
+name: open-agar
+
+services:
+  webserver:
+    image: node:23-alpine
+    container_name: agar_server
+    build: ./webserver
+    networks:
+      - agar_net
+    ports:
+      - 3001:3001
+  bot:
+    image: python:3
+    container_name: agar_bot
+    build: ./bot
+    networks:
+      - agar_net
+    depends_on:
+      - webserver
+networks:
+  agar_net:

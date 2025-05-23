@@ -1,3 +1,5 @@
+import config from 'config';
+
 import * as entityUtils from "../lib/entityUtils.js";
 
 import * as foodUtils from './food.js';
@@ -12,10 +14,14 @@ export { massFoodUtils };
 import * as playerUtils from './player.js';
 export { playerUtils };
 
+const foodMass = config.get('game.food.mass');
+const uniformDisposition = config.get('game.food.uniformDisposition');
+const virus = config.get('game.virus');
+
 const Map = class {
-    constructor(config) {
-        this.food = new foodUtils.FoodManager(config.foodMass, config.foodUniformDisposition);
-        this.viruses = new virusUtils.VirusManager(config.virus);
+    constructor() {
+        this.food = new foodUtils.FoodManager(foodMass, uniformDisposition);
+        this.viruses = new virusUtils.VirusManager(virus);
         this.massFood = new massFoodUtils.MassFoodManager();
         this.players = new playerUtils.PlayerManager();
     }

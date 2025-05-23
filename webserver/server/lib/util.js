@@ -1,5 +1,8 @@
 /* jslint node: true */
-import * as cfg from '../../config.js';
+import config from 'config';
+
+const gameWidth = config.get('game.width');
+const gameHeight = config.get('game.height');
 
 const validNick = function (nickname) {
     var regex = /^\w*$/;
@@ -41,8 +44,8 @@ export {randomInRange};
 // generate a random position within the field of play
 const randomPosition = function (radius) {
     return {
-        x: randomInRange(radius, cfg.gameWidth - radius),
-        y: randomInRange(radius, cfg.gameHeight - radius)
+        x: randomInRange(radius, gameWidth - radius),
+        y: randomInRange(radius, gameHeight - radius)
     };
 };
 
