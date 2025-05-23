@@ -3,19 +3,18 @@ name: open-agar
 services:
   webserver:
     image: node:23-alpine
-    container_name: agar_server
     build: ./webserver
-    networks:
-      - agar_net
     ports:
       - 3001:3001
+    healthcheck:
+      test: ["CMD-SHELL", "netstat -an | grep -q 3001"]
+      interval: 5s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
   bot:
     image: python:3
-    container_name: agar_bot
     build: ./bot
-    networks:
-      - agar_net
     depends_on:
-      - webserver
-networks:
-  agar_net:
+      webserver:
+        condition: service_healthy
