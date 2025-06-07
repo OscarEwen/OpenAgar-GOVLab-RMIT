@@ -10,8 +10,8 @@ class Virus {
         this.radius = radius;
         this.mass = mass;
         this.fill = config.fill;
-        this.stroke = config.stroke;
-        this.strokeWidth = config.strokeWidth;
+        this.stroke = config.stroke.color;
+        this.strokeWidth = config.stroke.width;
     }
 }
 

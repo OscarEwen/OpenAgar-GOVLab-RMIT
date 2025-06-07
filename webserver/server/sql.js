@@ -1,13 +1,14 @@
 // const sqlite3 = require('sqlite3').verbose();
+import config from 'config';
 import Database from 'better-sqlite3';
 import { join, dirname } from 'path';
 import { existsSync, mkdirSync } from 'fs';
-import { sqlinfo } from '../config.js';
+
+const sqlInfo = config.get('db.sqlInfo');
 
 const __dirname = import.meta.dirname;
 
-const sqlInfo = sqlinfo;
-const dbPath = join(__dirname, 'db', sqlInfo.fileName);
+const dbPath = join(__dirname, 'db', sqlInfo.filename);
 
 // Ensure the database folder exists
 const dbFolder = dirname(dbPath);

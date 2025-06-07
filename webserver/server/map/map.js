@@ -1,3 +1,5 @@
+import config from 'config';
+
 import * as entityUtils from "../lib/entityUtils.js";
 
 import * as foodUtils from './food.js';
@@ -12,10 +14,14 @@ export { massFoodUtils };
 import * as playerUtils from './player.js';
 export { playerUtils };
 
+const foodMass = config.get('game.food.mass');
+const uniformDisposition = config.get('game.food.uniformDisposition');
+const virus = config.get('game.virus');
+
 const Map = class {
-    constructor(config) {
-        this.food = new foodUtils.FoodManager(config.foodMass, config.foodUniformDisposition);
-        this.viruses = new virusUtils.VirusManager(config.virus);
+    constructor() {
+        this.food = new foodUtils.FoodManager(foodMass, uniformDisposition);
+        this.viruses = new virusUtils.VirusManager(virus);
         this.massFood = new massFoodUtils.MassFoodManager();
         this.players = new playerUtils.PlayerManager();
     }
@@ -27,10 +33,10 @@ const Map = class {
         const foodFreeCapacity = maxFood - this.food.data.length;
         const foodDiff = Math.min(parseInt(massDiff / foodMass), foodFreeCapacity);
         if (foodDiff > 0) {
-            console.debug('[DEBUG] Adding ' + foodDiff + ' food');
+            //console.debug('[DEBUG] Adding ' + foodDiff + ' food');
             this.food.addNew(foodDiff);
         } else if (foodDiff && foodFreeCapacity !== maxFood) {
-            console.debug('[DEBUG] Removing ' + -foodDiff + ' food');
+            //console.debug('[DEBUG] Removing ' + -foodDiff + ' food');
             this.food.removeExcess(-foodDiff);
         }
         //console.debug('[DEBUG] Mass rebalanced!');
