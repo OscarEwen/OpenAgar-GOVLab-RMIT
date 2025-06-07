@@ -32,7 +32,7 @@ class BotEvent(enum.Enum):
     NowAlive = 6
 
 class Bot:
-    def __init__(self, name="RandyBot"):
+    def __init__(self, name="Nanite"):
         self.name = name
         self.sio = socketio.Client()
         self.state = BotState.Eating
@@ -422,5 +422,5 @@ class Bot:
 
 
 if __name__ == "__main__":
-    bot = Bot(name=f"RandyBot{random.randint(1000, 9999)}")
+    bot = Bot(name=f"Nanite{random.randint(1000, 9999)}")
     bot.run()
