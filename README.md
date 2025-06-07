@@ -79,8 +79,8 @@ If you have [Docker](https://www.docker.com/) installed, after cloning the repos
 If you have [Docker](https://www.docker.com/) installed, after cloning the repository you can run the following commands to start the server and make it acessible at `http://localhost:3001`:
 
 ```
-docker build -t agarioclone_agar .
-docker run -it -p 3001:3001 agarioclone_agar
+docker build -t openagar .
+docker run -it -p 3001:3001 openagar
 ```
 
 ---
