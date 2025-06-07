@@ -27,7 +27,7 @@ const VirusManager = class {
 
     addNew(number) {
         while (number--) {
-            let mass = util.randomInRange(this.virusConfig.defaultMass.from, this.virusConfig.defaultMass.to);
+            let mass = util.randomInRange(this.virusConfig.mass.min, this.virusConfig.mass.max);
             let radius = util.massToRadius(mass);
             let position = entity.getPosition(this.virusConfig.uniformDisposition, radius, this.data);
             let newVirus = new Virus(position, radius, mass, this.virusConfig);
