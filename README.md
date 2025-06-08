@@ -91,6 +91,8 @@ From root change directory to "webserver" then:
 1. Enter the command `docker build -t openagar .`.
 2. Enter the command `docker run -it -p 3000:3000 openagar`.
 
+Note, to use bots the non-containerised version needs to be used (instructions under "Local Setup"), the Docker version does not work outside of Docker Compose atm.
+
 ---
 
 This project is licensed under the terms of the **MIT** license.
