@@ -1,5 +1,4 @@
 # Used to control python bots
-import multiprocessing
 import subprocess
 import argparse
 from pathlib import Path
