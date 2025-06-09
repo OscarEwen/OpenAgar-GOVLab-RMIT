@@ -1,4 +1,4 @@
-szx<!doctype html>
+<!doctype html>
 <html lang="en">
 
 <head>
@@ -38,18 +38,41 @@ szx<!doctype html>
                 maxlength="25" />
             <b class="input-error">Nick must be alphanumeric characters only!</b>
             <br />
-            <!-- skin selection dropdown -->
-            <label for="skinSelector">Choose your skin:</label>
-            <select id="skinSelector">
-                <option value="#ff0000">Red</option>
-                <option value="#0000ff">Blue</option>
-                <option value="#00ff00">Green</option>
-                <option value="#ffff00">Yellow</option>
-                <option value="CoolEmoji.png">Emoji Cool</option>
-                <option value="SadEmoji.png">Emoji Sad</option>
-                <option value="SillyEmoji.png">Emoji Silly</option>
-            </select>
-            
+            <!-- skin selection -->
+            <div id="skinSelection" style="margin-bottom: 1em; display: flex; flex-direction: column; align-items: center; gap: 0.7em; background: #f8f8fa; border-radius: 12px; padding: 1em 1.5em; box-shadow: 0 2px 8px rgba(0,0,0,0.07); max-width: 350px; margin-left: auto; margin-right: auto;">
+                <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+                    <span style="font-family: 'Segoe UI', Arial, sans-serif; font-weight: bold; font-size: 1.3em; letter-spacing: 0.5px; color: #222; margin-bottom: 0.3em;">Color</span>
+                    <input type="color" id="colorPicker" value="#ff0000"
+                        style="width: 100px; height: 40px; border: 2px solid #ddd; border-radius: 8px; background: #fff; cursor: pointer; box-shadow: 0 1px 4px #0001;">
+                </div>
+                <div style="width: 100%; margin-top: 0.7em;">
+                    <span style="font-family: 'Segoe UI', Arial, sans-serif; font-weight: bold; font-size: 1.3em; letter-spacing: 0.5px; color: #222; display: block; text-align: center; margin-bottom: 0.3em;">Skin</span>
+                    <div id="emojiSkins"
+                        style="display: flex; gap: 18px; margin-top: 0.2em; justify-content: center;">
+                        <div style="display: flex; flex-direction: column; align-items: center; gap: 0.2em;">
+                            <img src="img/skins/CoolEmoji.png" alt="Cool Emoji"
+                                class="emoji-skin-option" data-skin="CoolEmoji.png"
+                                style="width: 48px; height: 48px; border-radius: 50%; border: 3px solid #ff0000; cursor: pointer; background: #fff; transition: border 0.2s, box-shadow 0.2s;">
+                            <span style="font-size: 0.8em; color: #666;">Cool</span>
+                        </div>
+                        <div style="display: flex; flex-direction: column; align-items: center; gap: 0.2em;">
+                            <img src="img/skins/SadEmoji.png" alt="Sad Emoji"
+                                class="emoji-skin-option" data-skin="SadEmoji.png"
+                                style="width: 48px; height: 48px; border-radius: 50%; border: 3px solid #ff0000; cursor: pointer; background: #fff; transition: border 0.2s, box-shadow 0.2s;">
+                            <span style="font-size: 0.8em; color: #666;">Sad</span>
+                        </div>
+                        <div style="display: flex; flex-direction: column; align-items: center; gap: 0.2em;">
+                            <img src="img/skins/SillyEmoji.png" alt="Silly Emoji"
+                                class="emoji-skin-option" data-skin="SillyEmoji.png"
+                                style="width: 48px; height: 48px; border-radius: 50%; border: 3px solid #ff0000; cursor: pointer; background: #fff; transition: border 0.2s, box-shadow 0.2s;">
+                            <span style="font-size: 0.8em; color: #666;">Silly</span>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" id="selectedSkinType" value="color">
+                <input type="hidden" id="selectedSkinValue" value="#ff0000">
+            </div>
+            <!-- End Improved Skin Selection UI -->
             <a onclick="document.getElementById('spawn_cell').play();"><button id="startButton">Play</button></a>
             <button id="spectateButton">Spectate</button>
             <button id="settingsButton">Settings</button>

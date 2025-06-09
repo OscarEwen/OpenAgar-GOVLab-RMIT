@@ -22,18 +22,21 @@ function startGame(type) {
     config.playerName = playerNameInput.value.replace(/(<([^>]+)>)/ig, '').substring(0, 25);
     config.playerType = type;
 
-    // Get selected skin/color or image
-    var skinSelector = document.getElementById('skinSelector');
-    if (skinSelector) {
-        var skinValue = skinSelector.value;
-        if (skinValue.endsWith('.png')) {
-            playerSkin = { type: 'image', value: skinValue };
+    // Get selected skin/color or image from new UI
+    const selectedSkinType = document.getElementById('selectedSkinType');
+    const selectedSkinValue = document.getElementById('selectedSkinValue');
+    const colorPicker = document.getElementById('colorPicker');
+    let skin;
+    if (selectedSkinType && selectedSkinValue) {
+        if (selectedSkinType.value === 'image') {
+            skin = { type: 'image', value: selectedSkinValue.value, border: colorPicker ? colorPicker.value : '#ff0000' };
         } else {
-            playerSkin = { type: 'color', value: skinValue };
+            skin = { type: 'color', value: selectedSkinValue.value };
         }
     } else {
-        playerSkin = { type: 'color', value: "#ff0000" };
+        skin = { type: 'color', value: '#ff0000' };
     }
+    playerSkin = skin;
 
     config.screen.width = window.innerWidth;
     config.screen.height = window.innerHeight;
@@ -75,7 +78,61 @@ function validNick() {
     return regex.exec(playerNameInput.value) !== null;
 }
 
+
+// --- SKIN SELECTION LOGIC ---
+// Color picker and emoji skin selection logic
+function setupSkinSelection() {
+    const colorPicker = document.getElementById('colorPicker');
+    const emojiSkins = document.querySelectorAll('.emoji-skin-option');
+    const selectedSkinType = document.getElementById('selectedSkinType');
+    const selectedSkinValue = document.getElementById('selectedSkinValue');
+
+    // Helper to update border color of emoji options
+    function updateEmojiBorders(color) {
+        emojiSkins.forEach(img => {
+            img.style.borderColor = color;
+        });
+    }
+
+    // Color picker change
+    if (colorPicker) {
+        colorPicker.addEventListener('input', function () {
+            if (selectedSkinType.value === 'color') {
+                playerSkin = { type: 'color', value: this.value };
+                selectedSkinValue.value = this.value;
+            } else {
+                // If emoji selected, update border color
+                playerSkin = { type: 'image', value: selectedSkinValue.value, border: this.value };
+            }
+            updateEmojiBorders(this.value);
+        });
+    }
+
+    // Emoji click
+    emojiSkins.forEach(img => {
+        img.addEventListener('click', function () {
+            // Mark as selected
+            emojiSkins.forEach(i => i.classList.remove('selected-emoji'));
+            this.classList.add('selected-emoji');
+            selectedSkinType.value = 'image';
+            selectedSkinValue.value = this.getAttribute('data-skin');
+            playerSkin = { type: 'image', value: this.getAttribute('data-skin'), border: colorPicker.value };
+        });
+    });
+
+    // If user clicks away from emoji, revert to color
+    if (colorPicker) {
+        colorPicker.addEventListener('focus', function () {
+            selectedSkinType.value = 'color';
+            selectedSkinValue.value = this.value;
+            emojiSkins.forEach(i => i.classList.remove('selected-emoji'));
+            playerSkin = { type: 'color', value: this.value };
+        });
+    }
+}
+
 window.onload = () => {
+    setupSkinSelection();
 
     let btn = document.getElementById('startButton'),
         btnS = document.getElementById('spectateButton'),
@@ -397,16 +454,16 @@ function gameLoop() {
             if (skin && typeof skin === 'object') {
                 if (skin.type === 'image') {
                     imageSkin = skin.value;
-                    color = "#ffffff";
-                    borderColor = "#cccccc";
+                    color = '#ffffff';
+                    borderColor = skin.border || '#ff0000'; // Use selected border color or fallback
                 } else {
                     color = skin.value;
                     borderColor = skin.value;
                 }
             } else if (skin && typeof skin === 'string' && skin.endsWith('.png')) {
                 imageSkin = skin;
-                color = "#ffffff";
-                borderColor = "#cccccc";
+                color = '#ffffff';
+                borderColor = '#ff0000';
             } else if (skin && typeof skin === 'string') {
                 color = skin;
                 borderColor = skin;

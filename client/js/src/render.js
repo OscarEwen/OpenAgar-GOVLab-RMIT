@@ -5,17 +5,21 @@ const imageCache = {};
 // Draws a cell with an image skin if provided, otherwise as a colored circle
 const drawCellWithImage = (cell, playerConfig, borders, graph) => {
     if (cell.imageSkin) {
-        let img = imageCache[cell.imageSkin];
+        // Ensure we use only the filename, not an object
+        let imageName = cell.imageSkin;
+        if (typeof imageName === 'object' && imageName.value) {
+            imageName = imageName.value;
+        }
+        let img = imageCache[imageName];
         if (!img) {
             img = new window.Image();
-            img.src = "img/skins/" + cell.imageSkin;
+            img.src = imageName.startsWith('img/skins/') ? imageName : 'img/skins/' + imageName;
             img.onload = () => {
-                // Redraw next frame so the image appears as soon as it's loaded
                 if (typeof window !== "undefined" && window.requestAnimationFrame) {
                     window.requestAnimationFrame(() => {});
                 }
             };
-            imageCache[cell.imageSkin] = img;
+            imageCache[imageName] = img;
         }
         if (img.complete && img.naturalWidth !== 0) {
             // Draw image as circle mask
