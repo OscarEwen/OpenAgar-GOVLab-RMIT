@@ -59,7 +59,8 @@ const Map = class {
             hue: player.hue,
             id: player.id,
             name: player.name,
-                type: player.type
+            type: player.type,
+            skin: player.skin // skin is now an object {type, value}
             };
         }
         var visiblePlayers = [];

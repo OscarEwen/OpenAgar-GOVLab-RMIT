@@ -6,6 +6,7 @@ import * as config from './config.js';
 
 let playerNameInput = document.getElementById('playerNameInput');
 let socket;
+let playerSkin = { type: 'color', value: "#ff0000" }; // <-- add this line
 
 let debug = (args) => {
     if (console && console.log) {
@@ -20,6 +21,19 @@ if (/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {
 function startGame(type) {
     config.playerName = playerNameInput.value.replace(/(<([^>]+)>)/ig, '').substring(0, 25);
     config.playerType = type;
+
+    // Get selected skin/color or image
+    var skinSelector = document.getElementById('skinSelector');
+    if (skinSelector) {
+        var skinValue = skinSelector.value;
+        if (skinValue.endsWith('.png')) {
+            playerSkin = { type: 'image', value: skinValue };
+        } else {
+            playerSkin = { type: 'color', value: skinValue };
+        }
+    } else {
+        playerSkin = { type: 'color', value: "#ff0000" };
+    }
 
     config.screen.width = window.innerWidth;
     config.screen.height = window.innerHeight;
@@ -46,7 +60,8 @@ function startGame(type) {
     }
     if (!config.animLoopHandle)
         animloop();
-    socket.emit('respawn');
+    // Send skin as part of respawn
+    socket.emit('respawn', { skin: playerSkin });
     window.chat.socket = socket;
     window.chat.registerFunctions();
     window.canvas.socket = socket;
@@ -224,9 +239,10 @@ function setupSocket(socket) {
         player.screenWidth = config.screen.width;
         player.screenHeight = config.screen.height;
         player.target = window.canvas.target;
+        if (playerSettings.skin) player.skin = playerSettings.skin;
         config.player = player;
         window.chat.player = player;
-        socket.emit('gotit', player);
+        socket.emit('gotit', { ...player, skin: playerSkin }); // <-- use playerSkin here
         config.gameStart = true;
         window.chat.addSystemLine('Connected to the game!');
         window.chat.addSystemLine('Type <b>-help</b> for a list of commands.');
@@ -287,7 +303,7 @@ function setupSocket(socket) {
 
     // Handle movement.
     socket.on('serverTellPlayerMove', (playerData, userData, foodsList, massList, virusList) => {
-	console.log('serverTellPlayerMove',playerData)
+        console.log('serverTellPlayerMove',playerData)
 	// TODO: change point?
         if (config.playerType == 'player') {
             player.x = playerData.x;
@@ -295,6 +311,7 @@ function setupSocket(socket) {
             player.hue = playerData.hue;
             player.massTotal = playerData.massTotal;
             player.cells = playerData.cells;
+            player.skin = playerData.skin;
         }
         users = userData;
         foods = foodsList;
@@ -375,8 +392,28 @@ function gameLoop() {
 
         var cellsToDraw = [];
         for (var i = 0; i < users.length; i++) {
-            let color = 'hsl(' + users[i].hue + ', 100%, 50%)';
-            let borderColor = 'hsl(' + users[i].hue + ', 100%, 45%)';
+            let skin = users[i].skin;
+            let color, borderColor, imageSkin = null;
+            if (skin && typeof skin === 'object') {
+                if (skin.type === 'image') {
+                    imageSkin = skin.value;
+                    color = "#ffffff";
+                    borderColor = "#cccccc";
+                } else {
+                    color = skin.value;
+                    borderColor = skin.value;
+                }
+            } else if (skin && typeof skin === 'string' && skin.endsWith('.png')) {
+                imageSkin = skin;
+                color = "#ffffff";
+                borderColor = "#cccccc";
+            } else if (skin && typeof skin === 'string') {
+                color = skin;
+                borderColor = skin;
+            } else {
+                color = 'hsl(' + users[i].hue + ', 100%, 50%)';
+                borderColor = 'hsl(' + users[i].hue + ', 100%, 45%)';
+            }
             for (var j = 0; j < users[i].cells.length; j++) {
                 cellsToDraw.push({
                     color: color,
@@ -385,7 +422,8 @@ function gameLoop() {
                     name: users[i].name,
                     radius: users[i].cells[j].radius,
                     x: users[i].cells[j].x - player.x + config.screen.width / 2,
-                    y: users[i].cells[j].y - player.y + config.screen.height / 2
+                    y: users[i].cells[j].y - player.y + config.screen.height / 2,
+                    imageSkin: imageSkin
                 });
             }
         }
