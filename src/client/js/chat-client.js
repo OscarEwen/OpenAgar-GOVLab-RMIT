@@ -45,10 +45,6 @@ class ChatClient {
             self.toggleContinuity();
         });
 
-        this.registerCommand('roundfood', 'Toggle food drawing.', function (args) {
-            self.toggleRoundFood(args);
-        });
-
         this.registerCommand('help', 'Information about the chat commands.', function () {
             self.printHelp();
         });
@@ -162,19 +158,18 @@ class ChatClient {
     }
 
     toggleDarkMode() {
-        var LIGHT = '#f2fbff',
-            DARK = '#181818';
-        var LINELIGHT = '#000000',
-            LINEDARK = '#ffffff';
-
-        if (global.backgroundColor === LIGHT) {
-            global.backgroundColor = DARK;
-            global.lineColor = LINEDARK;
-            this.addSystemLine('Dark mode enabled.');
-        } else {
-            global.backgroundColor = LIGHT;
-            global.lineColor = LINELIGHT;
+        if (config.darkMode) {
+            config.darkMode = false;
+            document.getElementById('darkMode').checked = false;
+            config.backgroundColor = config.LIGHT;
+            config.lineColor = config.LINELIGHT;
             this.addSystemLine('Dark mode disabled.');
+        } else {
+            config.darkMode = true;
+            document.getElementById('darkMode').checked = true;
+            config.backgroundColor = config.DARK;
+            config.lineColor = config.LINEDARK;
+            this.addSystemLine('Dark mode enabled.');
         }
     }
 
@@ -205,16 +200,6 @@ class ChatClient {
         } else {
             global.continuity = false;
             this.addSystemLine('Continuity disabled.');
-        }
-    }
-
-    toggleRoundFood(args) {
-        if (args || global.foodSides < 10) {
-            global.foodSides = (args && !isNaN(args[0]) && +args[0] >= 3) ? +args[0] : 10;
-            this.addSystemLine('Food is now rounded!');
-        } else {
-            global.foodSides = 5;
-            this.addSystemLine('Food is no longer rounded!');
         }
     }
 }
