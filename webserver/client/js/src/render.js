@@ -23,7 +23,7 @@ const drawVirus = (position, virus, graph) => {
     let sides = 20;
 
     graph.beginPath();
-    for (let theta = 0; theta < FULL_ANGLE; theta += FULL_ANGLE / sides) {
+    for (theta = 0; theta < FULL_ANGLE; theta += FULL_ANGLE / sides) {
         let point = circlePoint(position, virus.radius, theta);
         graph.lineTo(point.x, point.y);
     }
@@ -46,11 +46,12 @@ const circlePoint = (origo, radius, theta) => ({
     y: origo.y + radius * Math.sin(theta)
 });
 
-const cellTouchingBorders = (cell, borders) =>
+const cellTouchingBorders = (cell, borders) => (
     cell.x - cell.radius <= borders.left ||
     cell.x + cell.radius >= borders.right ||
     cell.y - cell.radius <= borders.top ||
     cell.y + cell.radius >= borders.bottom
+)
 
 const regulatePoint = (point, borders) => ({
     x: valueInRange(borders.left, borders.right, point.x),
@@ -86,6 +87,7 @@ const drawCells = (cells, playerConfig, toggleMassState, borders, graph) => {
         } else {
             // Border corrections are not needed, the cell can be drawn as a circle
             drawRoundObject(cell, cell.radius, graph);
+            
         }
 
         // Draw the name of the player
@@ -133,13 +135,13 @@ const drawGrid = (global, player, screen, graph) => {
 
 const drawBorder = (borders, graph) => {
     graph.lineWidth = 1;
-    graph.strokeStyle = '#000000'
-    graph.beginPath()
+    graph.strokeStyle = '#000000';
+    graph.beginPath();
     graph.moveTo(borders.left, borders.top);
     graph.lineTo(borders.right, borders.top);
     graph.lineTo(borders.right, borders.bottom);
     graph.lineTo(borders.left, borders.bottom);
-    graph.closePath()
+    graph.closePath();
     graph.stroke();
 };
 

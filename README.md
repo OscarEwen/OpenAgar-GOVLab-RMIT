@@ -87,9 +87,12 @@ To run the openagar server and bots using docker compose, the following are requ
 Then run `docker compose build` followed by `docker compose up`, the compose file is configured to spawn 6 FSM bots and have the server accessible at `http://localhost:3000`.
 
 ### Using Docker Containers
-From root change directory to "webserver" then:
-1. Enter the command `docker build -t openagar .`.
-2. Enter the command `docker run -it -p 3000:3000 openagar`.
+1. From root change directory to "webserver" `cd webserver/`
+2. Build the webserver using the command `docker build -t openagar .`.
+3. Enter the command `docker run -it --network=host openagar`.
+4. Cd back to the "bot" directory `cd ../bot`
+5. Build the bot using the command `docker build -t agarbot .`.
+6. Run the bot container using `docker run -it --network=host openagar`.
 
 Note, to use bots the non-containerised version needs to be used (instructions under "Local Setup"), the Docker version does not work outside of Docker Compose atm.
 

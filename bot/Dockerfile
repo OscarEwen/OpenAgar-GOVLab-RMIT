@@ -1,6 +1,6 @@
 FROM python:3-alpine
 
-ENV SERVER_URL=http://webserver:3000
+# ENV SERVER_URL=http://openagar:3000
 
 WORKDIR /usr/src/app
 

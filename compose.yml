@@ -1,11 +1,10 @@
 name: open-agar
 
 services:
-  webserver:
+  openagar:
     image: node:23-alpine
     build: ./webserver
-    ports:
-      - 3000:3000
+    network_mode: "host"
     healthcheck:
       test: ["CMD-SHELL", "netstat -an | grep -q 3000"]
       interval: 5s
@@ -15,6 +14,7 @@ services:
   bot:
     image: python:3
     build: ./bot
+    network_mode: "host"
     depends_on:
-      webserver:
+      openagar:
         condition: service_healthy

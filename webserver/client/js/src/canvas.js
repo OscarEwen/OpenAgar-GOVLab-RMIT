@@ -28,9 +28,9 @@ class Canvas {
 
     // Function called when a key is pressed, will change direction if arrow key.
     directionDown(event) {
-    	var key = event.key; //which || event.keyCode;
+    	let key = event.key; //which || event.keyCode;
 	console.log("directionDown",key)
-        var self = this.parent; // have to do this so we are not using the cv object
+        let self = this.parent; // have to do this so we are not using the cv object
     	if (self.directional(key)) {
     		self.directionLock = true;
     		if (self.newDirection(key, self.directions, true)) {
@@ -44,7 +44,7 @@ class Canvas {
 
     // Function called when a key is lifted, will change direction if arrow key.
     directionUp(event) {
-    	var key = event.key; //which || event.keyCode;
+    	let key = event.key; //which || event.keyCode;
     	if (this.directional(key)) { // this == the actual class
     		if (this.newDirection(key, this.directions, false)) {
     			this.updateTarget(this.directions);
@@ -56,9 +56,9 @@ class Canvas {
 
     // Updates the direction array including information about the new direction.
     newDirection(direction, list, isAddition) {
-    	var result = false;
-    	var found = false;
-    	for (var i = 0, len = list.length; i < len; i++) {
+    	let result = false;
+    	let found = false;
+    	for (let i = 0, len = list.length; i < len; i++) {
     		if (list[i] == direction) {
     			found = true;
     			if (!isAddition) {
@@ -81,9 +81,9 @@ class Canvas {
     // Updates the target according to the directions in the directions array.
     updateTarget(list) {
     	this.target = { x : 0, y: 0 };
-    	var directionHorizontal = 0;
-    	var directionVertical = 0;
-    	for (var i = 0, len = list.length; i < len; i++) {
+    	let directionHorizontal = 0;
+    	let directionVertical = 0;
+    	for (let i = 0, len = list.length; i < len; i++) {
     		if (directionHorizontal === 0) {
     			if (list[i] == config.KEY_LEFT) directionHorizontal -= Number.MAX_VALUE;
     			else if (list[i] == config.KEY_RIGHT) directionHorizontal += Number.MAX_VALUE;
@@ -138,7 +138,7 @@ class Canvas {
 
     // Chat command callback functions.
     keyInput(event) {
-    	var key = event.key; //which || event.keyCode;
+    	let key = event.key; //which || event.keyCode;
     	if (key === config.KEY_FIREFOOD && this.parent.reenviar) {
             this.parent.socket.emit('1');
             this.parent.reenviar = false;

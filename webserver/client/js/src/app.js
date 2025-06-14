@@ -293,7 +293,7 @@ function setupSocket(socket) {
 
     // Handle movement.
     socket.on('serverTellPlayerMove', (playerData, userData, foodsList, massList, virusList) => {
-	console.log('serverTellPlayerMove',playerData)
+	//console.log('serverTellPlayerMove',playerData)
 	// TODO: change point?
         if (config.playerType == 'player') {
             player.x = playerData.x;
@@ -370,20 +370,20 @@ function gameLoop() {
 
 
         let borders = { // Position of the borders on the screen
-            left: config.screen.width / 2 - player.x,
-            right: config.screen.width / 2 + config.game.width - player.x,
-            top: config.screen.height / 2 - player.y,
-            bottom: config.screen.height / 2 + config.game.height - player.y
+            left: (config.screen.width / 2) - player.x,
+            right: (config.screen.width / 2) + config.game.width - player.x,
+            top: (config.screen.height / 2) - player.y,
+            bottom: (config.screen.height / 2) + config.game.height - player.y
         }
         if (config.borderDraw) {
             render.drawBorder(borders, graph);
         }
 
-        var cellsToDraw = [];
-        for (var i = 0; i < users.length; i++) {
+        let cellsToDraw = [];
+        for (let i = 0; i < users.length; i++) {
             let color = 'hsl(' + users[i].hue + ', 100%, 50%)';
             let borderColor = 'hsl(' + users[i].hue + ', 100%, 45%)';
-            for (var j = 0; j < users[i].cells.length; j++) {
+            for (let j = 0; j < users[i].cells.length; j++) {
                 cellsToDraw.push({
                     color: color,
                     borderColor: borderColor,
