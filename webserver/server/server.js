@@ -93,6 +93,11 @@ const addPlayer = (socket) => {
         console.log('[INFO] Player ' + clientPlayerData.name + ' connecting!');
         currentPlayer.init(generateSpawnpoint(), playerConfig.initial.mass);
 
+        // Store skin if provided
+        if (clientPlayerData.skin) {
+            currentPlayer.skin = clientPlayerData.skin;
+        }
+
         if (map.players.findIndexByID(socket.id) > -1) {
             console.log('[INFO] Player ID is already connected, kicking.');
             socket.disconnect();
@@ -120,8 +125,12 @@ const addPlayer = (socket) => {
         currentPlayer.screenHeight = data.screenHeight;
     });
 
-    socket.on('respawn', () => {
+    socket.on('respawn', (data) => {
         map.players.removePlayerByID(currentPlayer.id);
+        // Save skin on respawn if provided
+        if (data && data.skin) {
+            currentPlayer.skin = data.skin;
+        }
         socket.emit('welcome', currentPlayer, {
             width: config.gameWidth,
             height: config.gameHeight

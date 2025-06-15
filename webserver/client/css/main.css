@@ -280,3 +280,43 @@ input [type="image"]:focus{
  outline: 1px solid transparent;
  border-style: none;
 }
+
+/* This is stuff ive added for the skin selector panel that updates color and selected skins*/
+.emoji-skin-option.selected-emoji {
+    outline: 3px solid #0078ff;
+    box-shadow: 0 0 10px #0078ff44;
+    border-color: #0078ff !important;
+    z-index: 2;
+}
+#skinSelection label {
+    margin-bottom: 0.2em;
+}
+#skinSelection {
+    margin-bottom: 1em;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.7em;
+    background: #f8f8fa;
+    border-radius: 12px;
+    padding: 1em 1.5em;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    max-width: 350px;
+}
+#emojiSkins img.emoji-skin-option {
+    transition: border 0.2s, box-shadow 0.2s;
+}
+#emojiSkins span {
+    font-size: 0.8em;
+    color: #666;
+    margin-top: 0.2em;
+}
+#skinSelection input[type="color"] {
+    width: 48px;
+    height: 48px;
+    border: 2px solid #ddd;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+    box-shadow: 0 1px 4px #0001;
+}

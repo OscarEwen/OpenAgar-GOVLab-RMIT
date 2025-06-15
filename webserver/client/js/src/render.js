@@ -1,5 +1,61 @@
 const FULL_ANGLE = 2 * Math.PI;
 
+const imageCache = {};
+
+// Draws a cell with an image skin if provided, otherwise as a colored circle
+const drawCellWithImage = (cell, playerConfig, borders, graph) => {
+    if (cell.imageSkin) {
+        // Ensure we use only the filename, not an object
+        let imageName = cell.imageSkin;
+        if (typeof imageName === 'object' && imageName.value) {
+            imageName = imageName.value;
+        }
+        let img = imageCache[imageName];
+        if (!img) {
+            img = new window.Image();
+            img.src = imageName.startsWith('img/skins/') ? imageName : 'img/skins/' + imageName;
+            img.onload = () => {
+                if (typeof window !== "undefined" && window.requestAnimationFrame) {
+                    window.requestAnimationFrame(() => {});
+                }
+            };
+            imageCache[imageName] = img;
+        }
+        if (img.complete && img.naturalWidth !== 0) {
+            // Draw image as circle mask
+            graph.save();
+            graph.beginPath();
+            graph.arc(cell.x, cell.y, cell.radius, 0, FULL_ANGLE);
+            graph.closePath();
+            graph.clip();
+            graph.drawImage(img, cell.x - cell.radius, cell.y - cell.radius, cell.radius * 2, cell.radius * 2);
+            graph.restore();
+
+            // Draw border
+            graph.save();
+            graph.beginPath();
+            graph.arc(cell.x, cell.y, cell.radius, 0, FULL_ANGLE);
+            graph.closePath();
+            graph.lineWidth = 6;
+            graph.strokeStyle = cell.borderColor;
+            graph.stroke();
+            graph.restore();
+        } else {
+            // fallback: draw as colored cell until image loads
+            graph.fillStyle = cell.color;
+            graph.strokeStyle = cell.borderColor;
+            graph.lineWidth = 6;
+            drawRoundObject(cell, cell.radius, graph);
+        }
+    } else {
+        // Draw as normal colored cell
+        graph.fillStyle = cell.color;
+        graph.strokeStyle = cell.borderColor;
+        graph.lineWidth = 6;
+        drawRoundObject(cell, cell.radius, graph);
+    }
+}
+
 const drawRoundObject = (position, radius, graph) => {
     graph.beginPath();
     graph.arc(position.x, position.y, radius, 0, FULL_ANGLE);
@@ -78,16 +134,17 @@ const drawCellWithLines = (cell, borders, graph) => {
 const drawCells = (cells, playerConfig, toggleMassState, borders, graph) => {
     for (let cell of cells) {
         // Draw the cell itself
-        graph.fillStyle = cell.color;
-        graph.strokeStyle = cell.borderColor;
-        graph.lineWidth = 6;
-        if (cellTouchingBorders(cell, borders)) {
-            // Asssemble the cell from lines
-            drawCellWithLines(cell, borders, graph);
+        if (cell.imageSkin) {
+            drawCellWithImage(cell, playerConfig, borders, graph);
         } else {
-            // Border corrections are not needed, the cell can be drawn as a circle
-            drawRoundObject(cell, cell.radius, graph);
-            
+            graph.fillStyle = cell.color;
+            graph.strokeStyle = cell.borderColor;
+            graph.lineWidth = 6;
+            if (cellTouchingBorders(cell, borders)) {
+                drawCellWithLines(cell, borders, graph);
+            } else {
+                drawRoundObject(cell, cell.radius, graph);
+            }
         }
 
         // Draw the name of the player
