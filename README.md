@@ -80,7 +80,7 @@ From root:
 
 ## Docker Setup
 ### Network
-To use the docker containers, a network needs to be created, the application is setup to use the agarnet work which can be created using:
+To use the docker containers, a network needs to be created. The application is setup to use the agar network which can be created using:
 `docker network create agarnet`
 
 ### Using Docker Compose
@@ -88,7 +88,11 @@ To run the openagar server and bots using docker compose, the following are requ
 - docker
 - docker-compose
 
-Then run `docker compose build` followed by `docker compose up`, the compose file is configured to spawn 6 FSM bots and have the server accessible at `http://localhost:3000`.
+Then run:
+- `docker compose build` followed by 
+- `docker compose up`
+
+The compose file is configured to spawn 6 FSM bots and have the server accessible at `http://localhost:3000`.
 
 ### Using Docker Containers
 1. From root change directory to "webserver" `cd webserver/`
