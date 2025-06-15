@@ -17,6 +17,8 @@ A fork of an open source "Agar.IO" clone known as OpenAgar designed to work with
 ## How to Play
 You can check out how to play here when the wiki has been transferred.
 
+A short demo video can be found at: https://youtu.be/7-w8pSXDy3o
+
 ### Game Basics
 - Move your mouse around the screen to move your cell.
 - Eat food and other players in order to grow your character (food respawns every time a player eats it).
