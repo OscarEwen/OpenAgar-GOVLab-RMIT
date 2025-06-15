@@ -97,7 +97,7 @@ The compose file is configured to spawn 6 FSM bots and have the server accessibl
 ### Using Docker Containers
 1. From root change directory to "webserver" `cd webserver/`
 2. Build the webserver using the command `docker build -t openagar .`.
-3. Enter the command `docker run -it --network=agarnet -p 3000:3000 openagar`.
+3. Enter the command `docker run -it --network=agarnet -p 3000:3000 --name=openagar openagar`.
 4. Cd back to the "bot" directory `cd ../bot`
 5. Build the bot using the command `docker build -t agarbot .`.
 6. Run the bot container using `docker run -it --network=agarnet --name=agarbot agarbot`.
