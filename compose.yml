@@ -1,20 +1,24 @@
 name: open-agar
 
 services:
-  openagar:
-    image: node:23-alpine
-    build: ./webserver
-    network_mode: "host"
-    healthcheck:
-      test: ["CMD-SHELL", "netstat -an | grep -q 3000"]
-      interval: 5s
-      timeout: 30s
-      retries: 5
-      start_period: 30s
-  bot:
-    image: python:3
-    build: ./bot
-    network_mode: "host"
-    depends_on:
-      openagar:
-        condition: service_healthy
+    openagar:
+        image: node:23-alpine
+        build: ./webserver
+        ports:
+            - "3000:3000"
+        healthcheck:
+            test: ["CMD-SHELL", "netstat -an | grep -q 3000"]
+            interval: 5s
+            timeout: 30s
+            retries: 5
+            start_period: 30s
+    bot:
+        image: python:3
+        build: ./bot
+        depends_on:
+            openagar:
+                condition: service_healthy
+networks:
+    default:
+        name: agarnet
+        external: true

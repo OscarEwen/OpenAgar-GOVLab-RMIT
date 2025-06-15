@@ -79,6 +79,10 @@ From root:
 ---
 
 ## Docker Setup
+### Network
+To use the docker containers, a network needs to be created, the application is setup to use the agarnet work which can be created using:
+`docker network create agarnet`
+
 ### Using Docker Compose
 To run the openagar server and bots using docker compose, the following are required:
 - docker
@@ -89,12 +93,10 @@ Then run `docker compose build` followed by `docker compose up`, the compose fil
 ### Using Docker Containers
 1. From root change directory to "webserver" `cd webserver/`
 2. Build the webserver using the command `docker build -t openagar .`.
-3. Enter the command `docker run -it --network=host openagar`.
+3. Enter the command `docker run -it --network=agarnet openagar`.
 4. Cd back to the "bot" directory `cd ../bot`
 5. Build the bot using the command `docker build -t agarbot .`.
-6. Run the bot container using `docker run -it --network=host openagar`.
-
-Note, to use bots the non-containerised version needs to be used (instructions under "Local Setup"), the Docker version does not work outside of Docker Compose atm.
+6. Run the bot container using `docker run -it --network=agarnet openagar`.
 
 ---
 
