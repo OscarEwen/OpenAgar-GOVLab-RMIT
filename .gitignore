@@ -5,3 +5,4 @@ client/bower_components
 bin
 **/.venv
 webserver/client/index.html
+webserver/server/db/db.sqlite3
