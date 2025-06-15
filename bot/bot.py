@@ -1,14 +1,15 @@
-import socketio
-import random
-import time
-import math
 import enum
+import math
+import os
+import random
+import socketio
 import threading
+import time
 
 GAME_WIDTH = 5000 
 GAME_HEIGHT = 5000  
 
-SERVER_URL = "http://localhost:3000"
+SERVER_URL = os.environ.get("SERVER_URL", "http://webserver:3001")
 SCREEN_WIDTH = 1920
 SCREEN_HEIGHT = 1080
 
@@ -31,7 +32,7 @@ class BotEvent(enum.Enum):
     NowAlive = 6
 
 class Bot:
-    def __init__(self, name="RandyBot"):
+    def __init__(self, name="Nanite"):
         self.name = name
         self.sio = socketio.Client()
         self.state = BotState.Eating
@@ -421,5 +422,5 @@ class Bot:
 
 
 if __name__ == "__main__":
-    bot = Bot(name=f"RandyBot{random.randint(1000, 9999)}")
+    bot = Bot(name=f"Nanite{random.randint(1000, 9999)}")
     bot.run()
