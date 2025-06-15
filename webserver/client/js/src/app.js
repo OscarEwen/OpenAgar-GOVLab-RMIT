@@ -6,6 +6,7 @@ import * as config from './config.js';
 
 let playerNameInput = document.getElementById('playerNameInput');
 let socket;
+let playerSkin = { type: 'color', value: "#ff0000" }; // <-- add this line
 
 let debug = (args) => {
     if (console && console.log) {
@@ -20,6 +21,22 @@ if (/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {
 function startGame(type) {
     config.playerName = playerNameInput.value.replace(/(<([^>]+)>)/ig, '').substring(0, 25);
     config.playerType = type;
+
+    // Get selected skin/color or image from new UI
+    const selectedSkinType = document.getElementById('selectedSkinType');
+    const selectedSkinValue = document.getElementById('selectedSkinValue');
+    const colorPicker = document.getElementById('colorPicker');
+    let skin;
+    if (selectedSkinType && selectedSkinValue) {
+        if (selectedSkinType.value === 'image') {
+            skin = { type: 'image', value: selectedSkinValue.value, border: colorPicker ? colorPicker.value : '#ff0000' };
+        } else {
+            skin = { type: 'color', value: selectedSkinValue.value };
+        }
+    } else {
+        skin = { type: 'color', value: '#ff0000' };
+    }
+    playerSkin = skin;
 
     config.screen.width = window.innerWidth;
     config.screen.height = window.innerHeight;
@@ -46,7 +63,8 @@ function startGame(type) {
     }
     if (!config.animLoopHandle)
         animloop();
-    socket.emit('respawn');
+    // Send skin as part of respawn
+    socket.emit('respawn', { skin: playerSkin });
     window.chat.socket = socket;
     window.chat.registerFunctions();
     window.canvas.socket = socket;
@@ -60,7 +78,61 @@ function validNick() {
     return regex.exec(playerNameInput.value) !== null;
 }
 
+
+// --- SKIN SELECTION LOGIC ---
+// Color picker and emoji skin selection logic
+function setupSkinSelection() {
+    const colorPicker = document.getElementById('colorPicker');
+    const emojiSkins = document.querySelectorAll('.emoji-skin-option');
+    const selectedSkinType = document.getElementById('selectedSkinType');
+    const selectedSkinValue = document.getElementById('selectedSkinValue');
+
+    // Helper to update border color of emoji options
+    function updateEmojiBorders(color) {
+        emojiSkins.forEach(img => {
+            img.style.borderColor = color;
+        });
+    }
+
+    // Color picker change
+    if (colorPicker) {
+        colorPicker.addEventListener('input', function () {
+            if (selectedSkinType.value === 'color') {
+                playerSkin = { type: 'color', value: this.value };
+                selectedSkinValue.value = this.value;
+            } else {
+                // If emoji selected, update border color
+                playerSkin = { type: 'image', value: selectedSkinValue.value, border: this.value };
+            }
+            updateEmojiBorders(this.value);
+        });
+    }
+
+    // Emoji click
+    emojiSkins.forEach(img => {
+        img.addEventListener('click', function () {
+            // Mark as selected
+            emojiSkins.forEach(i => i.classList.remove('selected-emoji'));
+            this.classList.add('selected-emoji');
+            selectedSkinType.value = 'image';
+            selectedSkinValue.value = this.getAttribute('data-skin');
+            playerSkin = { type: 'image', value: this.getAttribute('data-skin'), border: colorPicker.value };
+        });
+    });
+
+    // If user clicks away from emoji, revert to color
+    if (colorPicker) {
+        colorPicker.addEventListener('focus', function () {
+            selectedSkinType.value = 'color';
+            selectedSkinValue.value = this.value;
+            emojiSkins.forEach(i => i.classList.remove('selected-emoji'));
+            playerSkin = { type: 'color', value: this.value };
+        });
+    }
+}
+
 window.onload = () => {
+    setupSkinSelection();
 
     let btn = document.getElementById('startButton'),
         btnS = document.getElementById('spectateButton'),
@@ -224,9 +296,10 @@ function setupSocket(socket) {
         player.screenWidth = config.screen.width;
         player.screenHeight = config.screen.height;
         player.target = window.canvas.target;
+        if (playerSettings.skin) player.skin = playerSettings.skin;
         config.player = player;
         window.chat.player = player;
-        socket.emit('gotit', player);
+        socket.emit('gotit', { ...player, skin: playerSkin }); // <-- use playerSkin here
         config.gameStart = true;
         window.chat.addSystemLine('Connected to the game!');
         window.chat.addSystemLine('Type <b>-help</b> for a list of commands.');
@@ -287,7 +360,7 @@ function setupSocket(socket) {
 
     // Handle movement.
     socket.on('serverTellPlayerMove', (playerData, userData, foodsList, massList, virusList) => {
-	console.log('serverTellPlayerMove',playerData)
+        console.log('serverTellPlayerMove',playerData)
 	// TODO: change point?
         if (config.playerType == 'player') {
             player.x = playerData.x;
@@ -295,6 +368,7 @@ function setupSocket(socket) {
             player.hue = playerData.hue;
             player.massTotal = playerData.massTotal;
             player.cells = playerData.cells;
+            player.skin = playerData.skin;
         }
         users = userData;
         foods = foodsList;
@@ -375,8 +449,28 @@ function gameLoop() {
 
         var cellsToDraw = [];
         for (var i = 0; i < users.length; i++) {
-            let color = 'hsl(' + users[i].hue + ', 100%, 50%)';
-            let borderColor = 'hsl(' + users[i].hue + ', 100%, 45%)';
+            let skin = users[i].skin;
+            let color, borderColor, imageSkin = null;
+            if (skin && typeof skin === 'object') {
+                if (skin.type === 'image') {
+                    imageSkin = skin.value;
+                    color = '#ffffff';
+                    borderColor = skin.border || '#ff0000'; // Use selected border color or fallback
+                } else {
+                    color = skin.value;
+                    borderColor = skin.value;
+                }
+            } else if (skin && typeof skin === 'string' && skin.endsWith('.png')) {
+                imageSkin = skin;
+                color = '#ffffff';
+                borderColor = '#ff0000';
+            } else if (skin && typeof skin === 'string') {
+                color = skin;
+                borderColor = skin;
+            } else {
+                color = 'hsl(' + users[i].hue + ', 100%, 50%)';
+                borderColor = 'hsl(' + users[i].hue + ', 100%, 45%)';
+            }
             for (var j = 0; j < users[i].cells.length; j++) {
                 cellsToDraw.push({
                     color: color,
@@ -385,7 +479,8 @@ function gameLoop() {
                     name: users[i].name,
                     radius: users[i].cells[j].radius,
                     x: users[i].cells[j].x - player.x + config.screen.width / 2,
-                    y: users[i].cells[j].y - player.y + config.screen.height / 2
+                    y: users[i].cells[j].y - player.y + config.screen.height / 2,
+                    imageSkin: imageSkin
                 });
             }
         }

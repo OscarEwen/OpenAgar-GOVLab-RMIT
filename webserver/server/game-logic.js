@@ -1,4 +1,4 @@
-import * as config from '../config.js';
+import config from 'config';
 
 const adjustForBoundaries = (position, radius, borderOffset, gameWidth, gameHeight) => {
     const borderCalc = radius + borderOffset;

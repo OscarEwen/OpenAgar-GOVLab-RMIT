@@ -10,8 +10,8 @@ class Virus {
         this.radius = radius;
         this.mass = mass;
         this.fill = config.fill;
-        this.stroke = config.stroke;
-        this.strokeWidth = config.strokeWidth;
+        this.stroke = config.stroke.color;
+        this.strokeWidth = config.stroke.width;
     }
 }
 
@@ -27,7 +27,7 @@ const VirusManager = class {
 
     addNew(number) {
         while (number--) {
-            var mass = util.randomInRange(this.virusConfig.defaultMass.from, this.virusConfig.defaultMass.to);
+            var mass = util.randomInRange(this.virusConfig.mass.min, this.virusConfig.mass.max);
             var radius = util.massToRadius(mass);
             var position = entity.getPosition(this.virusConfig.uniformDisposition, radius, this.data);
             var newVirus = new Virus(position, radius, mass, this.virusConfig);
