@@ -24,40 +24,109 @@ class ChatClient {
     // TODO: Break out many of these GameControls into separate classes.
 
     registerFunctions() {
-        var self = this;
-        this.registerCommand('ping', 'Check your latency.', function () {
-            self.checkLatency();
-        });
+    var self = this;
+    this.adminPassword = 'Openagar';
+    this.registerCommand('ping', 'Check your latency.', () => self.checkLatency());
+    this.registerCommand('dark', 'Toggle dark mode.', () => self.toggleDarkMode());
+    this.registerCommand('border', 'Toggle visibility of border.', () => self.toggleBorder());
+    this.registerCommand('mass', 'Toggle visibility of mass.', () => self.toggleMass());
+    this.registerCommand('continuity', 'Toggle continuity.', () => self.toggleContinuity());
+    this.registerCommand('help', 'Information about the chat commands.', () => self.printHelp());
 
-        this.registerCommand('dark', 'Toggle dark mode.', function () {
-            self.toggleDarkMode();
-        });
+// Admin login command
+this.registerCommand('admin', 'Login as admin.', (args) => {
+    if (args[0] === self.adminPassword) {
+        self.isAdmin = true;
+        self.addSystemLine('Admin console activated.');
 
-        this.registerCommand('border', 'Toggle visibility of border.', function () {
-            self.toggleBorder();
-        });
+        // Show dropdown after login
+        const dropdown = document.getElementById('debugCommandDropdown');
+        if (dropdown) dropdown.style.display = 'inline';
 
-        this.registerCommand('mass', 'Toggle visibility of mass.', function () {
-            self.toggleMass();
-        });
+        // Show help automatically
+        const lines = [
+            'Admin Debug Commands:',
+            '-eval player size Shows your mass',
+            '-eval player position Shows your X/Y',
+            '-eval players count Counts active players',
+            '-eval players position Lists all player positions',
+            '-eval players size Lists all player sizes',
+            '-eval player Dumps full player object'
+        ];
+        lines.forEach(line => self.addSystemLine(line));
 
-        this.registerCommand('continuity', 'Toggle continuity.', function () {
-            self.toggleContinuity();
-        });
-
-        this.registerCommand('help', 'Information about the chat commands.', function () {
-            self.printHelp();
-        });
-
-        this.registerCommand('login', 'Login as an admin.', function (args) {
-            self.socket.emit('pass', args);
-        });
-
-        this.registerCommand('kick', 'Kick a player, for admins only.', function (args) {
-            self.socket.emit('kick', args);
-        });
-        config.chatClient = this;
+    } else {
+        self.addSystemLine('Incorrect password.');
     }
+});
+
+
+
+// Help command (optional if users want to recheck commands later)
+this.registerCommand('help', 'Show all debug/admin commands.', () => {
+    
+    const lines = [
+        'Admin Debug Commands:',
+        '-eval player size',
+        '-eval player position',
+        '-eval players count',
+        '-eval players position',
+        '-eval players size',
+        '-eval player'
+    ];
+    lines.forEach(line => self.addSystemLine(line));
+});
+
+this.registerCommand('eval', 'Evaluate debug commands (admin only).', (args) => {
+    if (!self.isAdmin) {
+        self.addSystemLine(' You must be logged in as admin to use eval.');
+        return;
+    }
+
+    const input = args.join(' ');
+    const debugMap = {
+    'player size': 'player.massTotal',
+    'player position': '({ x: player.x, y: player.y })',
+    'players count': 'players.filter(p => p && p.cells?.length > 0).length',
+    'players position': 'players.filter(p => p && p.cells?.length > 0).map(p => ({ name: p.name, x: p.x, y: p.y }))',
+    'players size': 'players.filter(p => p && p.cells?.length > 0).map(p => ({ name: p.name, mass: p.massTotal }))',
+    'player': 'player'
+};
+
+    const code = debugMap[input] || input;
+
+    try {
+        const globals = {
+            player: config.player,
+            players: window.players || [],
+            bots: window.bots || [],
+            socket: self.socket,
+            config: config
+        };
+        const fn = new Function('globals', `with (globals) { return ${code}; }`);
+        const result = fn(globals);
+        self.addSystemLine('Result: ' + JSON.stringify(result));
+    } catch (err) {
+        self.addSystemLine('Error: ' + err.message);
+    }
+});
+
+
+
+
+document.getElementById('debugCommandDropdown').addEventListener('change', function () {
+    const cmd = this.value;
+    if (cmd) {
+        document.getElementById('chatInput').value = `-eval ${cmd}`;
+        this.selectedIndex = 0;
+        document.getElementById('chatInput').focus();
+    }
+});
+
+    config.chatClient = this;
+    this.registerFunctions();
+}
+
 
     // Chat box implementation for the users.
     addChatLine(name, message, me) {

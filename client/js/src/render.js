@@ -75,8 +75,11 @@ const drawCellWithLines = (cell, borders, graph) => {
 }
 
 const drawCells = (cells, playerConfig, toggleMassState, borders, graph) => {
+    window.players = cells; // Expose to debugger panel
+
     for (let cell of cells) {
         // Draw the cell itself
+        window.players = cells;
         graph.fillStyle = cell.color;
         graph.strokeStyle = cell.borderColor;
         graph.lineWidth = 6;

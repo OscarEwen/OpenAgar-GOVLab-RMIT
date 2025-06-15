@@ -116,13 +116,13 @@ let playerConfig = {
     defaultSize: 30
 };
 
-let player = {
-    id: -1,
-    x: config.screen.width / 2,
-    y: config.screen.height / 2,
-    screenWidth: config.screen.width,
-    screenHeight: config.screen.height,
-    target: { x: config.screen.width / 2, y: config.screen.height / 2 }
+window.player = {
+  id: -1,
+  x: config.screen.width / 2,
+  y: config.screen.height / 2,
+  screenWidth: config.screen.width,
+  screenHeight: config.screen.height,
+  target: { x: config.screen.width / 2, y: config.screen.height / 2 }
 };
 
 config.player = player;
@@ -416,3 +416,154 @@ function resize() {
     socket.emit('windowResized', { screenWidth: config.screen.width, screenHeight: config.screen.height });
 }
 
+// === ADMIN DEBUGGER PANEL INTEGRATION ===
+document.addEventListener('DOMContentLoaded', () => {
+  const chatInput = document.getElementById('chatInput');
+  let isAdmin = false;
+
+  // Create debugger panel and hide it by default
+  const panel = document.createElement('div');
+  panel.id = 'debugger';
+  panel.style.display = 'none';
+  panel.style.background = '#111';
+  panel.style.color = '#0f0';
+  panel.style.padding = '10px';
+  panel.style.fontFamily = 'monospace';
+  panel.style.marginTop = '10px';
+  panel.style.borderTop = '1px solid #444';
+
+  panel.innerHTML = `
+    <strong>Debugger Panel</strong><br/>
+    <select id="commandSelect" style="width:100%; margin-top:5px;">
+      <option value="">-- Select a command --</option>
+      <option value="player.x">Player X</option>
+      <option value="player.y">Player Y</option>
+      <option value="player.screenWidth">Screen Width</option>
+      <option value="player.screenHeight">Screen Height</option>
+      <option value="player.massTotal">Player Mass</option>
+    </select>
+    <textarea id="debugInput" rows="2" style="width:100%; background:#000; color:#0f0; margin-top:5px;"></textarea>
+    <button id="runScriptBtn" style="width:100%; margin-top:5px;">Run</button>
+    <pre id="debugOutput" style="background:#000; margin-top:5px; padding:5px; height:60px; overflow:auto;"></pre>
+  `;
+
+  // Append panel to chatbox (but hidden)
+  document.getElementById('chatbox').appendChild(panel);
+
+  // Setup logic inside timeout to wait for everything to render
+  setTimeout(() => {
+    const debugInput = document.getElementById('debugInput');
+    const runButton = document.getElementById('runScriptBtn');
+    const debugOutput = document.getElementById('debugOutput');
+    const commandSelect = document.getElementById('commandSelect');
+
+    // Fill textarea when a command is selected
+    commandSelect.addEventListener('change', () => {
+      debugInput.value = commandSelect.value;
+    });
+
+    runButton.addEventListener('click', () => {
+      const code = debugInput.value;
+      try {
+        const globals = { player: window.player, socket: window.socket };
+        const fn = new Function('globals', `with (globals) { return ${code}; }`);
+        debugOutput.textContent = fn(globals);
+      } catch (err) {
+        debugOutput.textContent = 'Error: ' + err.message;
+      }
+    });
+
+    // Listen for /admin command in chat
+    let isAdmin = false;
+
+chatInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    const message = chatInput.value.trim();
+
+    // 1. Handle admin login
+    if (message.startsWith('/admin')) {
+      const password = message.split(' ')[1];
+      if (password === 'letmein') {
+        isAdmin = true;
+        addSystemLine('Admin access granted.');
+      } else {
+        addSystemLine('Wrong password.');
+      }
+      chatInput.value = '';
+      e.preventDefault();
+      return;
+    }
+
+    // 2. Handle admin command execution
+    if (isAdmin && message.startsWith('/')) {
+      const command = message.slice(1); // Remove leading slash
+      try {
+        const globals = { player: window.player, socket: window.socket };
+        const fn = new Function('globals', `with (globals) { return ${command}; }`);
+        const result = fn(globals);
+        addSystemLine(` ${command} = ${result}`);
+      } catch (err) {
+        addSystemLine(`Error: ${err.message}`);
+      }
+      chatInput.value = '';
+      e.preventDefault();
+      return;
+    }
+
+    // Let normal chat go through otherwise
+  }
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  const chatInput = document.getElementById('chatInput');
+  const chatList = document.getElementById('chatList');
+
+  chatInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      const message = chatInput.value.trim();
+
+      // Admin login
+      if (message.startsWith('/admin')) {
+        const password = message.split(' ')[1];
+        if (password === 'letmein') {
+          isAdmin = true;
+          alert('Admin access granted.');
+          addSystemLine('Admin mode activated.');
+        } else {
+          alert('Wrong password.');
+          addSystemLine('Wrong password.');
+        }
+        chatInput.value = '';
+        e.preventDefault();
+        return;
+      }
+
+      // Admin commands like /player.x
+      if (isAdmin && message.startsWith('/')) {
+        const command = message.slice(1); // remove the `/`
+        try {
+          const globals = { player: window.player, socket: window.socket };
+          const fn = new Function('globals', `with (globals) { return ${command}; }`);
+          const result = fn(globals);
+          addSystemLine(` ${command} = ${result}`);
+        } catch (err) {
+          addSystemLine(`Error: ${err.message}`);
+        }
+        chatInput.value = '';
+        e.preventDefault();
+      }
+    }
+  });
+
+  function addSystemLine(text) {
+    const item = document.createElement('li');
+    item.classList.add('system');
+    item.style.color = '#0f0';
+    item.textContent = text;
+    chatList.appendChild(item);
+    chatList.scrollTop = chatList.scrollHeight;
+  }
+});
+    });
+  }, 500);
+  
