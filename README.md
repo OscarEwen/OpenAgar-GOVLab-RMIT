@@ -6,9 +6,9 @@ Forked from Ian Peakes GOVLab fork of the Agario clone project,
 
 [![GitHub Wiki](https://github.com/OscarEwen/OpenAgar-GOVLab-RMIT/wiki)]
 
-Live demo not operating as of yet.
-
 A fork of an open source "Agar.IO" clone known as OpenAgar designed to work with the GOVLab display system hosted at RMIT, a 14400x3240 (7m * 3m) tiled display wall. Built with socket.IO and HTML5 canvas on top of NodeJS.
+
+A short demo video can be found at: https://youtu.be/7-w8pSXDy3o
 
 ![Image](screenshot.png)
 
@@ -16,8 +16,6 @@ A fork of an open source "Agar.IO" clone known as OpenAgar designed to work with
 
 ## How to Play
 You can check out how to play here when the wiki has been transferred.
-
-A short demo video can be found at: https://youtu.be/7-w8pSXDy3o
 
 ### Game Basics
 - Move your mouse around the screen to move your cell.
