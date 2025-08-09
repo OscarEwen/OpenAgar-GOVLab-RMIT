@@ -399,12 +399,16 @@ const sendUpdates = () => {
 
     spectators.forEach((socketID) => {
         let player = spectatorPlayers[socketID];
-        map.doPlayerVisibility(player, (playerData, visiblePlayers, visibleFood, visibleMass, visibleViruses) => {
-            sockets[socketID].emit('serverTellPlayerMove', playerData, visiblePlayers, visibleFood, visibleMass, visibleViruses);
-            if (leaderboardChanged) {
-                sendLeaderboard(sockets[socketID]);
-            }
-        });
+        sockets[socketID].emit('serverTellPlayerMove',
+            player,
+            map.players.data,
+            map.food.data,
+            map.massFood.data,
+            map.viruses.data
+        );
+        if (leaderboardChanged) {
+            sendLeaderboard(sockets[socketID]);
+        }
     });
     map.enumerateWhatPlayersSee((playerData, visiblePlayers, visibleFood, visibleMass, visibleViruses) => {
         //console.log("sendUpdates player",playerData.id,playerData.name,"sees",visiblePlayers)
