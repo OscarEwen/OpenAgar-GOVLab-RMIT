@@ -3,11 +3,12 @@ from abc import ABC, abstractmethod
 import socketio
 import time
 import threading
+import os
 
 GAME_WIDTH = 5000 
 GAME_HEIGHT = 5000  
 
-SERVER_URL = "http://localhost:3000"
+SERVER_URL = os.getenv("OPENAGAR_URL") or os.getenv("SERVER_URL") or "http://localhost:3000"
 SCREEN_WIDTH = 1920
 SCREEN_HEIGHT = 1080
 
